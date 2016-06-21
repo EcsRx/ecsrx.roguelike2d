@@ -38,9 +38,6 @@ namespace Assets.Game.Systems
 
             Vector2 currentPosition = view.transform.position;
             var destination = currentPosition + movementComponent.Movement.Value;
-            Debug.Log("Movement: " + movementComponent.Movement.Value);
-            Debug.Log("Destination: " + destination);
-
             var canMove = CanMove(view, currentPosition, destination);
             var isPlayer = entity.HasComponent<PlayerComponent>();
 
@@ -50,10 +47,9 @@ namespace Assets.Game.Systems
                 return;
             }
 
-            if (canMove && isPlayer)
+            if (isPlayer)
             {
                 var rigidBody = view.GetComponent<Rigidbody2D>();
-//                SmoothMovement(view, rigidBody, destination);
                 MainThreadDispatcher.StartUpdateMicroCoroutine(SmoothMovement(view, rigidBody, destination, movementComponent));
             }
         }
@@ -67,20 +63,8 @@ namespace Assets.Game.Systems
             return (hit.transform == null);
         }
 
-        protected void SmoothMovement1(GameObject mover, Rigidbody2D rigidBody, Vector3 destination)
-        { 
-            Observable.EveryUpdate()
-                .TakeWhile(x => (mover.transform.position - destination).sqrMagnitude > float.Epsilon)
-                .Do(x => {
-                    Debug.Log("STILL MOVING");
-                    var newPostion = Vector3.MoveTowards(rigidBody.position, destination, _gameConfiguration.MovementSpeed * Time.deltaTime);
-                    rigidBody.MovePosition(newPostion);
-                });
-        }
-
         protected IEnumerator SmoothMovement(GameObject mover, Rigidbody2D rigidBody, Vector3 destination, MovementComponent movementComponent)
         {
-            Debug.Log("Moving To: " + destination);
             while (Vector3.Distance(mover.transform.position, destination) > 0.1f)
             {
                 var newPostion = Vector3.MoveTowards(rigidBody.position, destination, _gameConfiguration.MovementSpeed * Time.deltaTime);

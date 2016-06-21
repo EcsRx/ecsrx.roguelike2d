@@ -35,12 +35,8 @@ namespace Assets.Game.Systems
 
             if (horizontal != 0 || vertical != 0)
             {
-                Debug.Log(string.Format("Variables: x:{0}, y:{1}", horizontal, vertical));
                 var movement = new Vector2(horizontal, vertical);
-                Debug.Log("Movement Var: " + movement);
-                Debug.Log("Reactive Var Before: " + movementComponent.Movement.Value);
                 movementComponent.Movement.Value = movement;
-                Debug.Log("Reactive Var After: " + movementComponent.Movement.Value);
             }
         }
     }
