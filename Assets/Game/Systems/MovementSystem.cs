@@ -38,15 +38,23 @@ namespace Assets.Game.Systems
 
             Vector2 currentPosition = view.transform.position;
             var destination = currentPosition + movementComponent.Movement.Value;
+            Debug.Log("Movement: " + movementComponent.Movement.Value);
+            Debug.Log("Destination: " + destination);
+
             var canMove = CanMove(view, currentPosition, destination);
             var isPlayer = entity.HasComponent<PlayerComponent>();
+
+            if (!canMove)
+            {
+                movementComponent.Movement.Value = Vector2.zero;
+                return;
+            }
 
             if (canMove && isPlayer)
             {
                 var rigidBody = view.GetComponent<Rigidbody2D>();
 //                SmoothMovement(view, rigidBody, destination);
-                MainThreadDispatcher.StartUpdateMicroCoroutine(SmoothMovement(view, rigidBody, destination));
-                movementComponent.Movement.Value = Vector2.zero;
+                MainThreadDispatcher.StartUpdateMicroCoroutine(SmoothMovement(view, rigidBody, destination, movementComponent));
             }
         }
 
@@ -70,7 +78,7 @@ namespace Assets.Game.Systems
                 });
         }
 
-        protected IEnumerator SmoothMovement(GameObject mover, Rigidbody2D rigidBody, Vector3 destination)
+        protected IEnumerator SmoothMovement(GameObject mover, Rigidbody2D rigidBody, Vector3 destination, MovementComponent movementComponent)
         {
             Debug.Log("Moving To: " + destination);
             while (Vector3.Distance(mover.transform.position, destination) > 0.1f)
@@ -80,6 +88,7 @@ namespace Assets.Game.Systems
                 yield return null;
             }
             mover.transform.position = destination;
+            movementComponent.Movement.Value = Vector2.zero;
         }
     }
 }
