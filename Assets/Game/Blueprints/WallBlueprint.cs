@@ -7,9 +7,13 @@ namespace Assets.Game.Blueprints
 {
     public class WallBlueprint : IBlueprint
     {
+        private readonly int DefaultWallHealth = 3;
+
         public void Apply(IEntity entity)
         {
-            entity.AddComponent<WallComponent>();
+            var wallComponent = new WallComponent();
+            wallComponent.Health.Value = DefaultWallHealth;
+            entity.AddComponent(wallComponent);
             entity.AddComponent<ViewComponent>();
             entity.AddComponent<RandomlyPlacedComponent>();
         }

@@ -38,7 +38,10 @@ namespace Assets.Game.Systems
 
             Vector2 currentPosition = view.transform.position;
             var destination = currentPosition + movementComponent.Movement.Value;
-            var canMove = CanMove(view, currentPosition, destination);
+            var collidedObject = CheckForCollision(view, currentPosition, destination);
+            Debug.Log("HIT: " + collidedObject);
+            var canMove = collidedObject == null;
+
             var isPlayer = entity.HasComponent<PlayerComponent>();
 
             if (!canMove)
@@ -54,13 +57,15 @@ namespace Assets.Game.Systems
             }
         }
 
-        private bool CanMove(GameObject mover, Vector2 start, Vector2 destination)
+        private GameObject CheckForCollision(GameObject mover, Vector2 start, Vector2 destination)
         {
             var boxCollider = mover.GetComponent<BoxCollider2D>();
             boxCollider.enabled = false;
             var hit = Physics2D.Linecast(start, destination, _blockingLayer);
             boxCollider.enabled = true;
-            return (hit.transform == null);
+
+            if(!hit.collider) { return null; }
+            return hit.collider.gameObject;
         }
 
         protected IEnumerator SmoothMovement(GameObject mover, Rigidbody2D rigidBody, Vector3 destination, MovementComponent movementComponent)
