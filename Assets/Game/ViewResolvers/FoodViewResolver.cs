@@ -9,6 +9,7 @@ using EcsRx.Pools;
 using EcsRx.Unity.Components;
 using EcsRx.Unity.Systems;
 using UnityEngine;
+using Zenject;
 
 namespace Assets.Game.ViewResolvers
 {
@@ -23,7 +24,7 @@ namespace Assets.Game.ViewResolvers
             get { return _targetGroup; }
         }
 
-        public FoodViewResolver(IPoolManager poolManager, FoodTiles foodTiles) : base(poolManager)
+        public FoodViewResolver(IPoolManager poolManager, IInstantiator instantiator, FoodTiles foodTiles) : base(poolManager, instantiator)
         {
             _foodTiles = foodTiles;
         }

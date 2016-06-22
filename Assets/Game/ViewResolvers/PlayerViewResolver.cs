@@ -5,6 +5,7 @@ using EcsRx.Pools;
 using EcsRx.Unity.Components;
 using EcsRx.Unity.Systems;
 using UnityEngine;
+using Zenject;
 
 namespace Assets.Game.ViewResolvers
 {
@@ -17,7 +18,7 @@ namespace Assets.Game.ViewResolvers
             get { return _targetGroup; }
         }
 
-        public PlayerViewResolver(IPoolManager poolManager) : base(poolManager) {}
+        public PlayerViewResolver(IPoolManager poolManager, IInstantiator instantiator) : base(poolManager, instantiator) {}
 
         public override GameObject ResolveView(IEntity entity)
         {

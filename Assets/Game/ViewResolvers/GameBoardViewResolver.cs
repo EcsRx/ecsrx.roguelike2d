@@ -8,6 +8,7 @@ using EcsRx.Groups;
 using EcsRx.Pools;
 using EcsRx.Unity.Systems;
 using UnityEngine;
+using Zenject;
 
 namespace Assets.Game.ViewResolvers
 {
@@ -23,7 +24,8 @@ namespace Assets.Game.ViewResolvers
             get { return _targetGroup; }
         }
 
-        public GameBoardViewResolver(IPoolManager poolManager, FloorTiles floorTiles, OuterWallTiles wallTiles) : base(poolManager)
+        public GameBoardViewResolver(IPoolManager poolManager, IInstantiator instantiator, 
+            FloorTiles floorTiles, OuterWallTiles wallTiles) : base(poolManager, instantiator)
         {
             _floorTiles = floorTiles;
             _outerWallTiles = wallTiles;
