@@ -51,7 +51,13 @@ namespace Assets.Game.Systems
             }
 
             var rigidBody = view.GetComponent<Rigidbody2D>();
-            MainThreadDispatcher.StartUpdateMicroCoroutine(SmoothMovement(view, rigidBody, destination, movementComponent));      
+            MainThreadDispatcher.StartUpdateMicroCoroutine(SmoothMovement(view, rigidBody, destination, movementComponent));
+
+            if (isPlayer)
+            {
+                var playerComponent = entity.GetComponent<PlayerComponent>();
+                playerComponent.Food.Value--;
+            }
         }
 
         private GameObject CheckForCollision(GameObject mover, Vector2 start, Vector2 destination)
