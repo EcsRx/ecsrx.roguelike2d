@@ -1,5 +1,7 @@
 using Assets.Game.Components;
+using Assets.Game.Events;
 using EcsRx.Entities;
+using EcsRx.Events;
 using EcsRx.Groups;
 using EcsRx.Systems;
 using UniRx;
@@ -9,12 +11,18 @@ namespace Assets.Game.Systems
 {
     public class TouchInputSystem : IReactToGroupSystem
     {
+        private IEventSystem _eventSystem;
         private IGroup _targetGroup = new Group(typeof(MovementComponent), typeof(TouchInputComponent));
         public IGroup TargetGroup { get { return _targetGroup; } }
 
         public IObservable<GroupAccessor> ReactToGroup(GroupAccessor @group)
         {
-            return Observable.EveryUpdate().Select(x => @group);
+            return _eventSystem.Receive<PlayerTurnEvent>().Select(x => @group);
+        }
+
+        public TouchInputSystem(IEventSystem eventSystem)
+        {
+            _eventSystem = eventSystem;
         }
 
         public void Execute(IEntity entity)

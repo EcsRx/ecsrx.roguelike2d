@@ -18,6 +18,8 @@ namespace Assets.Game.Systems
         private readonly IGroup _targetGroup = new Group(typeof(EnemyComponent));
         private readonly GameConfiguration _gameConfiguration;
         private IDisposable _updateSubscription;
+        private bool isProcessing = false;
+        private int counter = 0;
 
         public IGroup TargetGroup { get { return _targetGroup; } }
         public IEventSystem EventSystem { get; private set; }
@@ -30,6 +32,7 @@ namespace Assets.Game.Systems
         
         private IEnumerator CarryOutTurns(GroupAccessor @group)
         {
+            counter++;
             yield return new WaitForSeconds(_gameConfiguration.TurnDelay);
 
             if(!@group.Entities.Any())
@@ -42,14 +45,20 @@ namespace Assets.Game.Systems
             }
 
             EventSystem.Publish(new PlayerTurnEvent());
+            isProcessing = false;
+            counter--;
+        }
+
+        private void CheckIfActioning(GroupAccessor @group)
+        {
+            if (isProcessing) { return; }
+            isProcessing = true;
+            MainThreadDispatcher.StartCoroutine(CarryOutTurns(@group));
         }
 
         public void StartSystem(GroupAccessor @group)
         {
-            _updateSubscription = Observable.EveryUpdate().Subscribe(x =>
-            {
-                MainThreadDispatcher.StartUpdateMicroCoroutine(CarryOutTurns(@group));
-            });
+            _updateSubscription = Observable.EveryUpdate().Subscribe(x => CheckIfActioning(@group));
         }
 
         public void StopSystem(GroupAccessor @group)
