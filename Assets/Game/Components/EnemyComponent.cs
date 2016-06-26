@@ -4,6 +4,6 @@ namespace Assets.Game.Components
 {
     public class EnemyComponent : IComponent
     {
-         
+         public bool IsSkippingNextTurn { get; set; }
     }
 }

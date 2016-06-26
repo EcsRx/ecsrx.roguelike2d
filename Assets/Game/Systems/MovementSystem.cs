@@ -14,9 +14,9 @@ namespace Assets.Game.Systems
 {
     public class MovementSystem : IReactToEntitySystem
     {
-        private LayerMask _blockingLayer = LayerMask.GetMask("BlockingLayer");
-        private IGroup _targetGroup = new Group(typeof(ViewComponent), typeof(MovementComponent));
-        private GameConfiguration _gameConfiguration;
+        private readonly LayerMask _blockingLayer = LayerMask.GetMask("BlockingLayer");
+        private readonly IGroup _targetGroup = new Group(typeof(ViewComponent), typeof(MovementComponent));
+        private readonly GameConfiguration _gameConfiguration;
 
         public IGroup TargetGroup { get { return _targetGroup; } }
 
@@ -50,11 +50,8 @@ namespace Assets.Game.Systems
                 return;
             }
 
-            if (isPlayer)
-            {
-                var rigidBody = view.GetComponent<Rigidbody2D>();
-                MainThreadDispatcher.StartUpdateMicroCoroutine(SmoothMovement(view, rigidBody, destination, movementComponent));
-            }
+            var rigidBody = view.GetComponent<Rigidbody2D>();
+            MainThreadDispatcher.StartUpdateMicroCoroutine(SmoothMovement(view, rigidBody, destination, movementComponent));      
         }
 
         private GameObject CheckForCollision(GameObject mover, Vector2 start, Vector2 destination)

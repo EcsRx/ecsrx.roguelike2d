@@ -28,7 +28,11 @@ public class AppContainer : EcsRxContainer
     {
         var levelEntity = defaultPool.CreateEntity(new LevelBlueprint());
         var levelComponent = levelEntity.GetComponent<LevelComponent>();
-
+        
+        Observable.Interval(TimeSpan.FromSeconds(_gameConfiguration.IntroLength))
+            .First()
+            .Subscribe(x => levelComponent.HasLoaded.Value = true);
+            
         defaultPool.CreateEntity(new GameBoardBlueprint());
 
         for (var i = 0; i < levelComponent.FoodCount; i++)
@@ -42,10 +46,5 @@ public class AppContainer : EcsRxContainer
 
         defaultPool.CreateEntity(new ExitBlueprint());
         defaultPool.CreateEntity(new PlayerBlueprint(_gameConfiguration.StartingFoodPoints));
-
-        Observable.Interval(TimeSpan.FromSeconds(_gameConfiguration.IntroLength))
-            .First()
-            .Subscribe(x => levelComponent.HasLoaded.Value = true)
-            .Dispose();
     }
 }

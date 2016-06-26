@@ -11,6 +11,7 @@ namespace Assets.Game.Blueprints
         {
             entity.AddComponent<EnemyComponent>();
             entity.AddComponent<ViewComponent>();
+            entity.AddComponent<MovementComponent>();
             entity.AddComponent<RandomlyPlacedComponent>();
         }
     }

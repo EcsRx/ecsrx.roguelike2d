@@ -1,12 +1,9 @@
 ﻿using Assets.Game.Components;
-using Assets.Game.Events;
 using EcsRx.Entities;
-using EcsRx.Events;
 using EcsRx.Groups;
 using EcsRx.Systems;
 using UniRx;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace Assets.Game.Systems
 {
@@ -24,13 +21,13 @@ namespace Assets.Game.Systems
 
         public IObservable<IEntity> ReactToEntity(IEntity entity)
         {
-            return entity.GetComponent<LevelComponent>().HasLoaded.DistinctUntilChanged().Select(x => entity);
+            return entity.GetComponent<LevelComponent>().HasLoaded.DistinctUntilChanged(x => x).Select(x => entity);
         }
 
         public void Execute(IEntity entity)
         {
             var levelComponent = entity.GetComponent<LevelComponent>();
-            _levelImage.SetActive(levelComponent.HasLoaded.Value);
+            _levelImage.SetActive(!levelComponent.HasLoaded.Value);
         }
     }
 }

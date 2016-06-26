@@ -10,9 +10,9 @@
 
         public GameConfiguration()
         {
-            IntroLength = 0.2f;
+            IntroLength = 2.0f;
             TurnDelay = 0.1f;
-            MovementSpeed = 5.0f;
+            MovementSpeed = 7.0f;
             MovementTime = 0.1f;
             StartingFoodPoints = 100;
         }
