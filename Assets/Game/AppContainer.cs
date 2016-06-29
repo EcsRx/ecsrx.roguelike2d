@@ -2,6 +2,7 @@
 using Assets.Game.Blueprints;
 using Assets.Game.Components;
 using Assets.Game.Configuration;
+using EcsRx.Extensions;
 using EcsRx.Pools;
 using EcsRx.Unity;
 using UniRx;
@@ -13,7 +14,7 @@ public class AppContainer : EcsRxContainer
 
     [Inject]
     private GameConfiguration _gameConfiguration;
-
+    
     protected override void SetupSystems()
     {}
 
@@ -21,14 +22,21 @@ public class AppContainer : EcsRxContainer
     {
         defaultPool = PoolManager.GetPool();
 
-        SetupLevel();
-    }
-
-    private void SetupLevel()
-    {
         var levelEntity = defaultPool.CreateEntity(new LevelBlueprint());
         var levelComponent = levelEntity.GetComponent<LevelComponent>();
-        
+
+        levelComponent.Level.DistinctUntilChanged()
+            .Subscribe(x => SetupLevel(levelComponent));
+    }
+
+    private void SetupLevel(LevelComponent levelComponent)
+    {
+        levelComponent.HasLoaded.Value = false;
+
+        defaultPool.RemoveEntitiesContaining(typeof(GameBoardComponent),
+            typeof(FoodComponent), typeof(WallComponent),
+            typeof(EnemyComponent));
+
         Observable.Interval(TimeSpan.FromSeconds(_gameConfiguration.IntroLength))
             .First()
             .Subscribe(x => levelComponent.HasLoaded.Value = true);

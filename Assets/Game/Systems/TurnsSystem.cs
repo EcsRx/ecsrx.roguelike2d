@@ -19,8 +19,9 @@ namespace Assets.Game.Systems
         private readonly IGroup _targetGroup = new Group(typeof(EnemyComponent));
         private readonly GameConfiguration _gameConfiguration;
         private IDisposable _updateSubscription;
-        private bool isProcessing;
-        private GroupAccessor _levelAccessor;
+        private bool _isProcessing;
+        private readonly GroupAccessor _levelAccessor;
+        private LevelComponent _levelComponent;
 
         public IGroup TargetGroup { get { return _targetGroup; } }
         public IEventSystem EventSystem { get; private set; }
@@ -35,36 +36,41 @@ namespace Assets.Game.Systems
         
         private IEnumerator CarryOutTurns(GroupAccessor @group)
         {
-            isProcessing = true;
+            _isProcessing = true;
             yield return new WaitForSeconds(_gameConfiguration.TurnDelay);
 
             if(!@group.Entities.Any())
             { yield return new WaitForSeconds(_gameConfiguration.TurnDelay); }
 
-            foreach (var enemy in @group.Entities)
+            var enemies = @group.Entities.ToArray();
+            foreach (var enemy in enemies)
             {
-                EventSystem.Publish(new EnemyTurnEvent(enemy));
+                //EventSystem.Publish(new EnemyTurnEvent(enemy));
                 yield return new WaitForSeconds(_gameConfiguration.MovementTime);
             }
 
             EventSystem.Publish(new PlayerTurnEvent());
-            isProcessing = false;
+            _isProcessing = false;
+        }
+
+        private bool IsLevelLoaded()
+        {
+            return _levelComponent != null && _levelComponent.HasLoaded.Value;
         }
 
         public void StartSystem(GroupAccessor @group)
         {
-            var waitForLevelToLoad = Observable.EveryUpdate().First(x =>
-            {
-                var level = _levelAccessor.Entities.First();
-                var levelComponent = level.GetComponent<LevelComponent>();
-                return levelComponent.HasLoaded.Value;
-            });
+            Observable.EveryUpdate().First()
+                .Subscribe(x => {
+                    var level = _levelAccessor.Entities.First();
+                    _levelComponent = level.GetComponent<LevelComponent>();
+                });
             
-            _updateSubscription = Observable.EveryUpdate().SkipUntil(waitForLevelToLoad).Subscribe(x =>
-            {
-                if (isProcessing) { return; }
-                MainThreadDispatcher.StartCoroutine(CarryOutTurns(@group));
-            });
+            _updateSubscription = Observable.EveryUpdate().Where(x => IsLevelLoaded())
+                .Subscribe(x => {
+                    if (_isProcessing) { return; }
+                    MainThreadDispatcher.StartCoroutine(CarryOutTurns(@group));
+                });
         }
 
         public void StopSystem(GroupAccessor @group)

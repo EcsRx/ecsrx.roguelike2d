@@ -1,4 +1,5 @@
-﻿using Assets.Game.Components;
+﻿using System;
+using Assets.Game.Components;
 using EcsRx.Entities;
 using EcsRx.Groups;
 using EcsRx.Systems;

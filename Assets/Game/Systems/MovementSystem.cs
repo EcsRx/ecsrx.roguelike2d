@@ -2,10 +2,13 @@
 using System.Collections;
 using Assets.Game.Components;
 using Assets.Game.Configuration;
+using Assets.Game.Events;
 using EcsRx.Entities;
+using EcsRx.Events;
 using EcsRx.Groups;
 using EcsRx.Systems;
 using EcsRx.Unity.Components;
+using EcsRx.Unity.MonoBehaviours;
 using UniRx;
 using UnityEditor;
 using UnityEngine;
@@ -17,12 +20,14 @@ namespace Assets.Game.Systems
         private readonly LayerMask _blockingLayer = LayerMask.GetMask("BlockingLayer");
         private readonly IGroup _targetGroup = new Group(typeof(ViewComponent), typeof(MovementComponent));
         private readonly GameConfiguration _gameConfiguration;
-
+        private readonly IEventSystem _eventSystem;
+        
         public IGroup TargetGroup { get { return _targetGroup; } }
 
-        public MovementSystem(GameConfiguration gameConfiguration)
+        public MovementSystem(GameConfiguration gameConfiguration, IEventSystem eventSystem)
         {
             _gameConfiguration = gameConfiguration;
+            _eventSystem = eventSystem;
         }
 
         public IObservable<IEntity> ReactToEntity(IEntity entity)
@@ -47,11 +52,25 @@ namespace Assets.Game.Systems
             if (!canMove)
             {
                 movementComponent.Movement.Value = Vector2.zero;
+
+                var entityView = collidedObject.GetComponent<EntityView>();
+                if(!entityView) { return; }
+
+                if (isPlayer && collidedObject.tag.Contains("Wall"))
+                { WallHit(entityView.Entity, entity); }
+
+                if (isPlayer && collidedObject.tag.Contains("Enemy"))
+                { EnemyHit(entityView.Entity, entity); }
+
+                if(!isPlayer && collidedObject.tag.Contains("Player"))
+                { PlayerHit(entityView.Entity, entity); }
+                
                 return;
             }
 
             var rigidBody = view.GetComponent<Rigidbody2D>();
             MainThreadDispatcher.StartUpdateMicroCoroutine(SmoothMovement(view, rigidBody, destination, movementComponent));
+            _eventSystem.Publish(new EntityMovedEvent(isPlayer));
 
             if (isPlayer)
             {
@@ -81,6 +100,21 @@ namespace Assets.Game.Systems
             }
             mover.transform.position = destination;
             movementComponent.Movement.Value = Vector2.zero;
+        }
+
+        private void WallHit(IEntity wall, IEntity player)
+        {
+            _eventSystem.Publish(new WallHitEvent(wall, player));
+        }
+
+        private void PlayerHit(IEntity player, IEntity enemy)
+        {
+            _eventSystem.Publish(new PlayerHitEvent(enemy, player));
+        }
+
+        private void EnemyHit(IEntity enemy, IEntity player)
+        {
+            _eventSystem.Publish(new EnemyHitEvent(enemy, player));
         }
     }
 }

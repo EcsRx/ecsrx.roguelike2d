@@ -2,14 +2,14 @@
 
 namespace Assets.Game.Events
 {
-    public class ExitReachedEvent
+    public class PlayerHitEvent
     {
-        public IEntity Exit { get; private set; }
+        public IEntity Enemy { get; private set; }
         public IEntity Player { get; private set; }
 
-        public ExitReachedEvent(IEntity exit, IEntity player)
+        public PlayerHitEvent(IEntity player, IEntity enemy)
         {
-            Exit = exit;
+            Enemy = enemy;
             Player = player;
         }
     }
