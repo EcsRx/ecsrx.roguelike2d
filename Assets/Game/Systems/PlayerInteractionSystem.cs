@@ -37,7 +37,6 @@ namespace Assets.Game.Systems
                 var playerView = currentPlayer.GetComponent<ViewComponent>().View;
                 var triggerObservable = playerView.OnTriggerEnter2DAsObservable();
 
-                
                 triggerObservable.Where(x =>
                 {
                     Debug.Log("Object: " + x.gameObject.name + " : " + x.gameObject.tag);

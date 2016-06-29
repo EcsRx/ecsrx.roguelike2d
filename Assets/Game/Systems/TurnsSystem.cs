@@ -18,18 +18,19 @@ namespace Assets.Game.Systems
     {
         private readonly IGroup _targetGroup = new Group(typeof(EnemyComponent));
         private readonly GameConfiguration _gameConfiguration;
+        private readonly IEventSystem _eventSystem;
+
         private IDisposable _updateSubscription;
         private bool _isProcessing;
         private readonly GroupAccessor _levelAccessor;
         private LevelComponent _levelComponent;
 
         public IGroup TargetGroup { get { return _targetGroup; } }
-        public IEventSystem EventSystem { get; private set; }
 
         public TurnsSystem(GameConfiguration gameConfiguration, IEventSystem eventSystem, IPoolManager poolManager)
         {
             _gameConfiguration = gameConfiguration;
-            EventSystem = eventSystem;
+            _eventSystem = eventSystem;
 
             _levelAccessor = poolManager.CreateGroupAccessor(new Group(typeof (LevelComponent)));
         }
@@ -45,11 +46,12 @@ namespace Assets.Game.Systems
             var enemies = @group.Entities.ToArray();
             foreach (var enemy in enemies)
             {
-                //EventSystem.Publish(new EnemyTurnEvent(enemy));
+                _eventSystem.Publish(new EnemyTurnEvent(enemy));
                 yield return new WaitForSeconds(_gameConfiguration.MovementTime);
             }
 
-            EventSystem.Publish(new PlayerTurnEvent());
+            _eventSystem.Publish(new PlayerTurnEvent());
+
             _isProcessing = false;
         }
 

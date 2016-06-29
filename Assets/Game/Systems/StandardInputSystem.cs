@@ -1,7 +1,10 @@
-﻿using Assets.Game.Components;
+﻿using System;
+using System.Collections.Generic;
+using Assets.Game.Components;
 using Assets.Game.Events;
 using EcsRx.Entities;
 using EcsRx.Events;
+using EcsRx.Extensions;
 using EcsRx.Groups;
 using EcsRx.Systems;
 using UniRx;
@@ -11,25 +14,16 @@ namespace Assets.Game.Systems
 {
     public class StandardInputSystem : IReactToGroupSystem
     {
-        private IEventSystem _eventSystem;
-        private IGroup _targetGroup = new Group(typeof(MovementComponent), typeof(StandardInputComponent));
+        private readonly IGroup _targetGroup = new Group(typeof(MovementComponent), typeof(StandardInputComponent));
         public IGroup TargetGroup { get { return _targetGroup; } }
 
         public IObservable<GroupAccessor> ReactToGroup(GroupAccessor @group)
         {
-            return _eventSystem.Receive<PlayerTurnEvent>().Select(x => @group);
-        }
-
-        public StandardInputSystem(IEventSystem eventSystem)
-        {
-            _eventSystem = eventSystem;
+            return Observable.EveryUpdate().Select(x => @group);
         }
 
         public void Execute(IEntity entity)
         {
-            var movementComponent = entity.GetComponent<MovementComponent>();
-            if(movementComponent.Movement.Value != Vector2.zero) { return; }
-            
             var horizontal = 0;
             var vertical = 0;
 
@@ -43,8 +37,8 @@ namespace Assets.Game.Systems
 
             if (horizontal != 0 || vertical != 0)
             {
-                var movement = new Vector2(horizontal, vertical);
-                movementComponent.Movement.Value = movement;
+                var inputComponent = entity.GetComponent<StandardInputComponent>();
+                inputComponent.PendingMovement = new Vector2(horizontal, vertical);
             }
         }
     }

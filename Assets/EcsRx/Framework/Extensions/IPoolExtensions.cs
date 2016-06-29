@@ -21,5 +21,12 @@ namespace EcsRx.Extensions
                 .ToList()
                 .ForEachRun(pool.RemoveEntity);
         }
+
+        public static void RemoveAllEntities(this IPool pool)
+        {
+            var allEntities = pool.Entities.ToArray();
+            foreach(var entity in allEntities)
+            { pool.RemoveEntity(entity); }
+        }
     }
 }

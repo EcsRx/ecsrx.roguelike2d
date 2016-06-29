@@ -1,4 +1,6 @@
-﻿using EcsRx.Entities;
+﻿using System;
+using EcsRx.Entities;
+using EcsRx.Events;
 using EcsRx.Extensions;
 using EcsRx.Groups;
 using EcsRx.Pools;
@@ -9,12 +11,14 @@ using UniRx;
 using UniRx.Triggers;
 using UnityEngine;
 using Zenject;
+using Object = UnityEngine.Object;
 
 namespace EcsRx.Unity.Systems
 {
     public abstract class ViewResolverSystem : ISetupSystem
     {
         public IPoolManager PoolManager { get; private set; }
+        public IEventSystem EventSystem { get; private set; }
         public IInstantiator Instantiator { get; private set; }
 
         public virtual IGroup TargetGroup
@@ -22,10 +26,11 @@ namespace EcsRx.Unity.Systems
             get {  return new Group(typeof(ViewComponent)); }
         }
 
-        protected ViewResolverSystem(IPoolManager poolManager, IInstantiator instantiator)
+        protected ViewResolverSystem(IPoolManager poolManager, IEventSystem eventSystem, IInstantiator instantiator)
         {
             PoolManager = poolManager;
             Instantiator = instantiator;
+            EventSystem = eventSystem;
         }
 
         protected GameObject InstantiateAndInject(GameObject prefab,
@@ -39,7 +44,10 @@ namespace EcsRx.Unity.Systems
         }
 
         public abstract GameObject ResolveView(IEntity entity);
-        
+
+        protected virtual void DestroyView(GameObject view)
+        { Object.Destroy(view); }
+
         public virtual void Setup(IEntity entity)
         {
             var viewComponent = entity.GetComponent<ViewComponent>();
@@ -57,12 +65,24 @@ namespace EcsRx.Unity.Systems
                 entityBinding.Pool = PoolManager.GetContainingPoolFor(entity);
             }
 
+            IDisposable viewSubscription = null;
             if (viewComponent.DestroyWithView)
             {
-                viewObject.OnDestroyAsObservable()
+                viewSubscription = viewObject.OnDestroyAsObservable()
                     .Subscribe(x => entityBinding.Pool.RemoveEntity(entity))
                     .AddTo(viewObject);
             }
+
+            EventSystem.Receive<EntityRemovedEvent>()
+                .First(x => x.Entity == entity)
+                .Subscribe(x =>
+                {
+                    if(viewSubscription != null)
+                    { viewSubscription.Dispose(); }
+
+                    DestroyView(viewObject);
+                });
+            
         }
     }
 }

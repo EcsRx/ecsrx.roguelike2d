@@ -3,6 +3,7 @@ using Assets.Game.Components;
 using Assets.Game.Extensions;
 using Assets.Game.SceneCollections;
 using EcsRx.Entities;
+using EcsRx.Events;
 using EcsRx.Groups;
 using EcsRx.Pools;
 using EcsRx.Unity.Components;
@@ -23,7 +24,7 @@ namespace Assets.Game.ViewResolvers
             get { return _targetGroup; }
         }
 
-        public ExitViewResolver(IPoolManager poolManager, IInstantiator instantiator, ExitTiles exitTiles) : base(poolManager, instantiator)
+        public ExitViewResolver(IPoolManager poolManager, IEventSystem eventSystem, IInstantiator instantiator, ExitTiles exitTiles) : base(poolManager, eventSystem, instantiator)
         {
             _exitTiles = exitTiles;
         }

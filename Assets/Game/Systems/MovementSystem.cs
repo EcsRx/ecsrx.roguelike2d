@@ -44,7 +44,6 @@ namespace Assets.Game.Systems
             Vector2 currentPosition = view.transform.position;
             var destination = currentPosition + movementComponent.Movement.Value;
             var collidedObject = CheckForCollision(view, currentPosition, destination);
-            Debug.Log("HIT: " + collidedObject);
             var canMove = collidedObject == null;
 
             var isPlayer = entity.HasComponent<PlayerComponent>();

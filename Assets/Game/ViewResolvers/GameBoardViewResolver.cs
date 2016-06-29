@@ -4,6 +4,7 @@ using Assets.Game.Extensions;
 using Assets.Game.Groups;
 using Assets.Game.SceneCollections;
 using EcsRx.Entities;
+using EcsRx.Events;
 using EcsRx.Groups;
 using EcsRx.Pools;
 using EcsRx.Unity.Systems;
@@ -24,8 +25,8 @@ namespace Assets.Game.ViewResolvers
             get { return _targetGroup; }
         }
 
-        public GameBoardViewResolver(IPoolManager poolManager, IInstantiator instantiator, 
-            FloorTiles floorTiles, OuterWallTiles wallTiles) : base(poolManager, instantiator)
+        public GameBoardViewResolver(IPoolManager poolManager, IEventSystem eventSystem, IInstantiator instantiator, 
+            FloorTiles floorTiles, OuterWallTiles wallTiles) : base(poolManager, eventSystem, instantiator)
         {
             _floorTiles = floorTiles;
             _outerWallTiles = wallTiles;

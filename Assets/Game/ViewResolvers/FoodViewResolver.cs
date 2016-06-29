@@ -4,6 +4,7 @@ using Assets.Game.Extensions;
 using Assets.Game.Groups;
 using Assets.Game.SceneCollections;
 using EcsRx.Entities;
+using EcsRx.Events;
 using EcsRx.Groups;
 using EcsRx.Pools;
 using EcsRx.Unity.Components;
@@ -24,7 +25,7 @@ namespace Assets.Game.ViewResolvers
             get { return _targetGroup; }
         }
 
-        public FoodViewResolver(IPoolManager poolManager, IInstantiator instantiator, FoodTiles foodTiles) : base(poolManager, instantiator)
+        public FoodViewResolver(IPoolManager poolManager, IEventSystem eventSystem, IInstantiator instantiator, FoodTiles foodTiles) : base(poolManager, eventSystem, instantiator)
         {
             _foodTiles = foodTiles;
         }

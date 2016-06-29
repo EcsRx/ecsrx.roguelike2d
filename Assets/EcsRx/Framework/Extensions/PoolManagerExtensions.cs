@@ -17,5 +17,17 @@ namespace EcsRx.Extensions
         {
             return poolManager.Pools.SingleOrDefault(x => x.Entities.Contains(entity));
         }
+
+        public static void RemoveEntitiesContaining(this IPoolManager poolManager, params Type[] components)
+        {
+            foreach (var pool in poolManager.Pools)
+            { pool.RemoveEntitiesContaining(components); }
+        }
+
+        public static void RemoveEntity(this IPoolManager poolManager, IEntity entity)
+        {
+            var containingPool = poolManager.GetContainingPoolFor(entity);
+            containingPool.RemoveEntity(entity);
+        }
     }
 }

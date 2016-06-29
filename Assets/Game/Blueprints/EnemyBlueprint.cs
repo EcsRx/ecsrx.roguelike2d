@@ -9,7 +9,10 @@ namespace Assets.Game.Blueprints
     {
         public void Apply(IEntity entity)
         {
-            entity.AddComponent<EnemyComponent>();
+            var enemyComponent = new EnemyComponent();
+            enemyComponent.Health.Value = 3;
+
+            entity.AddComponent(enemyComponent);
             entity.AddComponent<ViewComponent>();
             entity.AddComponent<MovementComponent>();
             entity.AddComponent<RandomlyPlacedComponent>();

@@ -11,27 +11,17 @@ namespace Assets.Game.Systems
 {
     public class TouchInputSystem : IReactToGroupSystem
     {
-        private IEventSystem _eventSystem;
         private IGroup _targetGroup = new Group(typeof(MovementComponent), typeof(TouchInputComponent));
         public IGroup TargetGroup { get { return _targetGroup; } }
 
         public IObservable<GroupAccessor> ReactToGroup(GroupAccessor @group)
         {
-            return _eventSystem.Receive<PlayerTurnEvent>().Select(x => @group);
-        }
-
-        public TouchInputSystem(IEventSystem eventSystem)
-        {
-            _eventSystem = eventSystem;
+            return Observable.EveryUpdate().Select(x => @group);
         }
 
         public void Execute(IEntity entity)
         {
-            var movementComponent = entity.GetComponent<MovementComponent>();
             var touchComponent = entity.GetComponent<TouchInputComponent>();
-
-            //If it's not the player's turn, exit the function.
-            //if (!GameManager.instance.playersTurn) return;
 
             var horizontal = 0;
             var vertical = 0;
@@ -74,14 +64,12 @@ namespace Assets.Game.Systems
                 }
             }
 
-            Debug.Log("INPUT: " + horizontal + " | " + vertical);
             if (horizontal != 0 || vertical != 0)
             {
                 //Call AttemptMove passing in the generic parameter Wall, since that is what Player may interact with if they encounter one (by attacking it)
                 //Pass in horizontal and vertical as parameters to specify the direction to move Player in.
                 var movement = new Vector2(horizontal, vertical);
-                movementComponent.Movement.Value = movement;
-                Debug.Log("MOVING: " + movement);
+                touchComponent.PendingMovement = movement;
             }
         }
     }

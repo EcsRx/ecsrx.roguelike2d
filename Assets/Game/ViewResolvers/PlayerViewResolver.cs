@@ -1,5 +1,6 @@
 ﻿using Assets.Game.Components;
 using EcsRx.Entities;
+using EcsRx.Events;
 using EcsRx.Groups;
 using EcsRx.Pools;
 using EcsRx.Unity.Components;
@@ -18,7 +19,7 @@ namespace Assets.Game.ViewResolvers
             get { return _targetGroup; }
         }
 
-        public PlayerViewResolver(IPoolManager poolManager, IInstantiator instantiator) : base(poolManager, instantiator) {}
+        public PlayerViewResolver(IPoolManager poolManager, IEventSystem eventSystem, IInstantiator instantiator) : base(poolManager, eventSystem, instantiator) {}
 
         public override GameObject ResolveView(IEntity entity)
         {
