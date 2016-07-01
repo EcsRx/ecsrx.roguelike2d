@@ -27,9 +27,13 @@ namespace Assets.Game.Systems
 
         public override void EventTriggered(ExitReachedEvent eventData)
         {
-            var currentLevel = _level.GetComponent<LevelComponent>().Level.Value;
-            _level.RemoveComponent<LevelComponent>();
-            _level.ApplyBlueprint(new LevelBlueprint(currentLevel + 1));
+            var movementComponent = eventData.Player.GetComponent<MovementComponent>();
+            movementComponent.StopMovement = true;
+
+            var levelComponent = _level.GetComponent<LevelComponent>();
+            var currentLevel = levelComponent.Level.Value;
+            var levelBlueprint = new LevelBlueprint();
+            levelBlueprint.UpdateLevel(levelComponent, currentLevel + 1);
         }
     }
 }

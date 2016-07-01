@@ -32,16 +32,16 @@ public class AppContainer : EcsRxContainer
         var levelEntity = defaultPool.CreateEntity(new LevelBlueprint());
         var player = defaultPool.CreateEntity(new PlayerBlueprint(_gameConfiguration.StartingFoodPoints));
         var playerView = player.GetComponent<ViewComponent>();
-
-        _eventSystem.Receive<ComponentAddedEvent>().Where(x => x.Entity == levelEntity && x.Component is LevelComponent)
-            .Subscribe(x =>
-            {
-                SetupLevel(x.Component as LevelComponent);
-                playerView.View.transform.position = Vector3.zero;
-            });
-        
         var levelComponent = levelEntity.GetComponent<LevelComponent>();
-        SetupLevel(levelComponent);
+
+        levelComponent.Level.DistinctUntilChanged().Subscribe(x =>
+        {
+            playerView.View.transform.position = Vector3.zero;
+            SetupLevel(levelComponent);
+        });
+
+        Observable.Interval(TimeSpan.FromSeconds(1))
+            .Subscribe(x => { Debug.Log("current position: " + playerView.View.transform.position); });
     }
 
     private void SetupLevel(LevelComponent levelComponent)

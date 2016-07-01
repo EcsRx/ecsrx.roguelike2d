@@ -20,16 +20,17 @@ namespace Assets.Game.Blueprints
 
         public void Apply(IEntity entity)
         {
-            var levelComponent = new LevelComponent
-            {
-                EnemyCount = (int)Mathf.Log(_level, 2f),
-                FoodCount = Random.Range(_minFood, _maxFood),
-                WallCount = Random.Range(_minWalls, _maxWalls)
-            };
-
-            levelComponent.Level.Value = _level;
-
+            var levelComponent = new LevelComponent();
+            UpdateLevel(levelComponent, _level);
             entity.AddComponent(levelComponent);
+        }
+
+        public void UpdateLevel(LevelComponent levelComponent, int level)
+        {
+            levelComponent.EnemyCount = (int) Mathf.Log(level, 2f);
+            levelComponent.FoodCount = Random.Range(_minFood, _maxFood);
+            levelComponent.WallCount = Random.Range(_minWalls, _maxWalls);
+            levelComponent.Level.Value = level;
         }
     }
 }
