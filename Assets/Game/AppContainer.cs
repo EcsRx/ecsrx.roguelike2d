@@ -2,6 +2,7 @@
 using Assets.Game.Blueprints;
 using Assets.Game.Components;
 using Assets.Game.Configuration;
+using Assets.Game.Events;
 using EcsRx.Entities;
 using EcsRx.Events;
 using EcsRx.Extensions;
@@ -32,16 +33,24 @@ public class AppContainer : EcsRxContainer
         var levelEntity = defaultPool.CreateEntity(new LevelBlueprint());
         var player = defaultPool.CreateEntity(new PlayerBlueprint(_gameConfiguration.StartingFoodPoints));
         var playerView = player.GetComponent<ViewComponent>();
+        var playerComponent = player.GetComponent<PlayerComponent>();
         var levelComponent = levelEntity.GetComponent<LevelComponent>();
 
-        levelComponent.Level.DistinctUntilChanged().Subscribe(x =>
-        {
-            playerView.View.transform.position = Vector3.zero;
-            SetupLevel(levelComponent);
-        });
+        levelComponent.Level.DistinctUntilChanged()
+            .Subscribe(x => {
+                playerView.View.transform.position = Vector3.zero;
+                SetupLevel(levelComponent);
+            });
 
-        Observable.Interval(TimeSpan.FromSeconds(1))
-            .Subscribe(x => { Debug.Log("current position: " + playerView.View.transform.position); });
+        _eventSystem.Receive<PlayerKilledEvent>()
+            .Delay(TimeSpan.FromSeconds(_gameConfiguration.IntroLength))
+            //.DelaySubscription(TimeSpan.FromSeconds(_gameConfiguration.IntroLength))
+            .Subscribe(x =>
+            {
+                levelComponent.Level.Value = 1;
+                playerComponent.Food.Value = _gameConfiguration.StartingFoodPoints;
+                SetupLevel(levelComponent);
+            });
     }
 
     private void SetupLevel(LevelComponent levelComponent)

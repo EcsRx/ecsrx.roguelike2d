@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using Assets.Game.Components;
+using Assets.Game.Events;
+using EcsRx.Events;
 using EcsRx.Extensions;
 using EcsRx.Groups;
 using EcsRx.Systems;
@@ -18,7 +20,13 @@ namespace Assets.Game.Systems
 
         private Text _levelText;
         private LevelComponent _levelComponent;
-        private IList<IDisposable> _subscriptions = new List<IDisposable>();
+        private readonly IEventSystem _eventSystem;
+        private readonly IList<IDisposable> _subscriptions = new List<IDisposable>();
+
+        public LevelTextUpdateSystem(IEventSystem eventSystem)
+        {
+            _eventSystem = eventSystem;
+        }
 
         public void StartSystem(GroupAccessor @group)
         {
@@ -36,6 +44,10 @@ namespace Assets.Game.Systems
         {
             _levelComponent.Level.DistinctUntilChanged()
                 .Subscribe(levelNumber => _levelText.text = string.Format("Day {0}", levelNumber))
+                .AddTo(_subscriptions);
+
+            _eventSystem.Receive<PlayerKilledEvent>()
+                .Subscribe(eventData => _levelText.text = string.Format("After {0} days, you starved.", _levelComponent.Level.Value))
                 .AddTo(_subscriptions);
         }
 

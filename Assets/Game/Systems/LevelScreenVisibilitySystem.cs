@@ -1,5 +1,10 @@
-﻿using Assets.Game.Components;
-using EcsRx.Entities;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using Assets.Game.Components;
+using Assets.Game.Events;
+using EcsRx.Events;
+using EcsRx.Extensions;
 using EcsRx.Groups;
 using EcsRx.Systems;
 using UniRx;
@@ -7,27 +12,45 @@ using UnityEngine;
 
 namespace Assets.Game.Systems
 {
-    public class LevelScreenVisibilitySystem : IReactToEntitySystem
+    public class LevelScreenVisibilitySystem : IManualSystem
     {
         private readonly IGroup _targetGroup = new Group(typeof(LevelComponent));
-        private readonly GameObject _levelImage;
-
         public IGroup TargetGroup { get { return _targetGroup; } }
 
-        public LevelScreenVisibilitySystem()
+        private GameObject _levelImage;
+        private LevelComponent _levelComponent;
+        private IEventSystem _eventSystem;
+        private IList<IDisposable> _subscriptions = new List<IDisposable>();
+
+        public LevelScreenVisibilitySystem(IEventSystem eventSystem)
+        { _eventSystem = eventSystem; }
+
+        public void StartSystem(GroupAccessor @group)
         {
-            _levelImage = GameObject.Find("LevelImage");
+            this.WaitForScene()
+                .Subscribe(x =>
+                {
+                    var level = @group.Entities.First();
+                    _levelComponent = level.GetComponent<LevelComponent>();
+                    _levelImage = GameObject.Find("LevelImage");
+                    SetupSubscriptions();
+                });
         }
 
-        public IObservable<IEntity> ReactToEntity(IEntity entity)
+        public void SetupSubscriptions()
         {
-            return entity.GetComponent<LevelComponent>().HasLoaded.DistinctUntilChanged(x => x).Select(x => entity);
+            _levelComponent.HasLoaded.DistinctUntilChanged(isLoaded => isLoaded)
+                .Subscribe(x => _levelImage.SetActive(!_levelComponent.HasLoaded.Value))
+                .AddTo(_subscriptions);
+
+            _eventSystem.Receive<PlayerKilledEvent>()
+                .Subscribe(x => _levelImage.SetActive(true))
+                .AddTo(_subscriptions);
         }
 
-        public void Execute(IEntity entity)
+        public void StopSystem(GroupAccessor @group)
         {
-            var levelComponent = entity.GetComponent<LevelComponent>();
-            _levelImage.SetActive(!levelComponent.HasLoaded.Value);
+            _subscriptions.DisposeAll();
         }
     }
 }
