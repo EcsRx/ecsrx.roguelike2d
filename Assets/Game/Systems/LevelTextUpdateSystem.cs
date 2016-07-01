@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using Assets.Game.Components;
-using EcsRx.Entities;
+using EcsRx.Extensions;
 using EcsRx.Groups;
 using EcsRx.Systems;
 using UniRx;
@@ -9,29 +11,37 @@ using UnityEngine.UI;
 
 namespace Assets.Game.Systems
 {
-    public class LevelTextUpdateSystem : IReactToEntitySystem
+    public class LevelTextUpdateSystem : IManualSystem
     {
         private readonly IGroup _targetGroup = new Group(typeof(LevelComponent));
-        
-        private readonly Text _levelText;
-
         public IGroup TargetGroup { get { return _targetGroup; } }
 
-        public LevelTextUpdateSystem()
+        private Text _levelText;
+        private LevelComponent _levelComponent;
+        private IList<IDisposable> _subscriptions = new List<IDisposable>();
+
+        public void StartSystem(GroupAccessor @group)
         {
-            _levelText = GameObject.Find("LevelText").GetComponent<Text>();
+            this.WaitForScene()
+                .Subscribe(x =>
+                {
+                    var level = @group.Entities.First();
+                    _levelComponent = level.GetComponent<LevelComponent>();
+                    _levelText = GameObject.Find("LevelText").GetComponent<Text>();
+                    SetupSubscriptions();
+                });
         }
 
-        public IObservable<IEntity> ReactToEntity(IEntity entity)
+        private void SetupSubscriptions()
         {
-            var levelComponent = entity.GetComponent<LevelComponent>();
-            return levelComponent.Level.DistinctUntilChanged().Select(x => entity);
+            _levelComponent.Level.DistinctUntilChanged()
+                .Subscribe(levelNumber => _levelText.text = string.Format("Day {0}", levelNumber))
+                .AddTo(_subscriptions);
         }
 
-        public void Execute(IEntity entity)
+        public void StopSystem(GroupAccessor @group)
         {
-            var levelComponent = entity.GetComponent<LevelComponent>();
-            _levelText.text = string.Format("Day {0}", levelComponent.Level.Value);
+            _subscriptions.DisposeAll();
         }
     }
 }

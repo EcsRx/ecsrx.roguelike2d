@@ -1,14 +1,8 @@
 using Assets.Game.Components;
 using Assets.Game.Events;
-using EcsRx.Entities;
 using EcsRx.Events;
-using EcsRx.Extensions;
-using EcsRx.Groups;
-using EcsRx.Pools;
-using EcsRx.Systems;
 using EcsRx.Systems.Custom;
 using EcsRx.Unity.Components;
-using UniRx;
 using UnityEngine;
 
 namespace Assets.Game.Systems
@@ -19,12 +13,18 @@ namespace Assets.Game.Systems
 
         public override void EventTriggered(PlayerHitEvent eventData)
         {
+            var enemyComponent = eventData.Enemy.GetComponent<EnemyComponent>();
             var playerComponent = eventData.Player.GetComponent<PlayerComponent>();
-            playerComponent.Food.Value -= 10;
+            playerComponent.Food.Value -= enemyComponent.EnemyPower;
 
             var viewComponent = eventData.Enemy.GetComponent<ViewComponent>();
             var animator = viewComponent.View.GetComponent<Animator>();
             animator.SetTrigger("enemyAttack");
+
+            if (playerComponent.Food.Value <= 0)
+            {
+                EventSystem.Publish(new PlayerKilledEvent(eventData.Player));
+            }
         }
     }
 }

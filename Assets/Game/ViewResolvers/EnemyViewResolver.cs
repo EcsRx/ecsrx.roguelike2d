@@ -1,7 +1,6 @@
-﻿using Assets.EcsRx.Framework.Attributes;
+﻿using System.Linq;
+using Assets.EcsRx.Framework.Attributes;
 using Assets.Game.Components;
-using Assets.Game.Extensions;
-using Assets.Game.Groups;
 using Assets.Game.SceneCollections;
 using EcsRx.Entities;
 using EcsRx.Events;
@@ -32,7 +31,8 @@ namespace Assets.Game.ViewResolvers
 
         public override GameObject ResolveView(IEntity entity)
         {
-            var tileChoice = _enemyTiles.AvailableTiles.TakeRandom();
+            var enemyComponent = entity.GetComponent<EnemyComponent>();
+            var tileChoice = _enemyTiles.AvailableTiles.ElementAt((int) enemyComponent.EnemyType);
             var gameObject = Object.Instantiate(tileChoice, Vector3.zero, Quaternion.identity) as GameObject;
             gameObject.name = string.Format("enemy-{0}", entity.Id);
             return gameObject;

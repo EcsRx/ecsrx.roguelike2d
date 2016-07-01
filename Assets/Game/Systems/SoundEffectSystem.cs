@@ -25,7 +25,7 @@ namespace Assets.Game.Systems
         private readonly FoodSounds _foodSounds;
 
         private readonly IEventSystem _eventSystem;
-        private List<IDisposable> _subscriptions = new List<IDisposable>();
+        private readonly List<IDisposable> _subscriptions = new List<IDisposable>();
 
         public SoundEffectSystem(EnemyAttackSounds enemyAttackSounds, PlayerAttackSounds playerAttackSounds, 
             WalkingSounds walkingSounds, DeathSounds deathSounds, DrinkSounds drinkSounds, 
@@ -61,6 +61,10 @@ namespace Assets.Game.Systems
 
             _eventSystem.Receive<PlayerHitEvent>()
                 .Subscribe(x => PlayOneOf(_enemyAttackSounds.AvailableClips))
+                .AddTo(_subscriptions);
+
+            _eventSystem.Receive<PlayerKilledEvent>()
+                .Subscribe(x => PlayOneOf(_deathSounds.AvailableClips))
                 .AddTo(_subscriptions);
         }
 
