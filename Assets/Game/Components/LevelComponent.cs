@@ -1,9 +1,10 @@
-﻿using EcsRx.Components;
+﻿using System;
+using EcsRx.Components;
 using UniRx;
 
 namespace Assets.Game.Components
 {
-    public class LevelComponent : IComponent
+    public class LevelComponent : IComponent, IDisposable
     {
         public ReactiveProperty<bool> HasLoaded { get; set; } 
         public ReactiveProperty<int> Level { get; set; }
@@ -15,6 +16,12 @@ namespace Assets.Game.Components
         {
             HasLoaded = new BoolReactiveProperty(false);
             Level = new IntReactiveProperty(1);
+        }
+
+        public void Dispose()
+        {
+            HasLoaded.Dispose();
+            Level.Dispose();
         }
     }
 }

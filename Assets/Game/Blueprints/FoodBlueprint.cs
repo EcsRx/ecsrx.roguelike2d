@@ -9,7 +9,8 @@ namespace Assets.Game.Blueprints
     {
         public void Apply(IEntity entity)
         {
-            entity.AddComponent<FoodComponent>();
+            var foodComponent = new FoodComponent { FoodAmount = 10 };
+            entity.AddComponent(foodComponent);
             entity.AddComponent<ViewComponent>();
             entity.AddComponent<RandomlyPlacedComponent>();
         }

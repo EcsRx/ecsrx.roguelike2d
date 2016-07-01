@@ -17,8 +17,12 @@ namespace Assets.Game.Systems
 {
     public class PlayerInteractionSystem : IManualSystem
     {
-        private readonly IGroup _targetGroup = new Group(typeof(PlayerComponent), typeof(ViewComponent));
-        public IGroup TargetGroup { get { return _targetGroup; } }
+        private readonly IGroup _targetGroup = new Group(typeof (PlayerComponent), typeof (ViewComponent));
+
+        public IGroup TargetGroup
+        {
+            get { return _targetGroup; }
+        }
 
         private readonly IList<IDisposable> _foodTriggers = new List<IDisposable>();
         private readonly IList<IDisposable> _exitTriggers = new List<IDisposable>();
@@ -31,47 +35,45 @@ namespace Assets.Game.Systems
 
         public void StartSystem(GroupAccessor @group)
         {
-            foreach(var player in @group.Entities)
+            this.WaitForScene().Subscribe(x =>
             {
-                var currentPlayer = player;
-                var playerView = currentPlayer.GetComponent<ViewComponent>().View;
-                var triggerObservable = playerView.OnTriggerEnter2DAsObservable();
-
-                triggerObservable.Where(x =>
-                {
-                    Debug.Log("Object: " + x.gameObject.name + " : " + x.gameObject.tag);
-                    return x.gameObject.tag == "something";
-                });
-
-                /*
-                var foodTrigger = triggerObservable
-                    .Where(x => x.gameObject.tag == "Food" || x.gameObject.tag == "Soda")
-                    .Subscribe(x =>
-                    {
-                        var entityView = x.gameObject.GetComponent<EntityView>();
-                        var isSoda = x.gameObject.tag == "Soda";
-                        HandleFoodPickup(entityView.Entity, currentPlayer, isSoda);
-                    });
-
-                _foodTriggers.Add(foodTrigger);
-
-                var exitTrigger = triggerObservable
-                    .Where(x => x.gameObject.tag == "Exit")
-                    .Subscribe(x =>
-                    {
-                        var entityView = x.gameObject.GetComponent<EntityView>();
-                        HandleExit(entityView.Entity, currentPlayer);
-                    });
-
-                _exitTriggers.Add(exitTrigger);
-                */
-            }
+                foreach(var player in @group.Entities)
+                { CheckForInteractions(player); }
+            });
         }
 
         public void StopSystem(GroupAccessor @group)
         {
             _foodTriggers.DisposeAll();
             _exitTriggers.DisposeAll();
+        }
+
+        private void CheckForInteractions(IEntity player)
+        {
+            var currentPlayer = player;
+            var playerView = currentPlayer.GetComponent<ViewComponent>().View;
+            var triggerObservable = playerView.OnTriggerEnter2DAsObservable();
+            
+            var foodTrigger = triggerObservable
+                .Where(x => x.gameObject.tag == "Food" || x.gameObject.tag == "Soda")
+                .Subscribe(x =>
+                {
+                    var entityView = x.gameObject.GetComponent<EntityView>();
+                    var isSoda = x.gameObject.tag == "Soda";
+                    HandleFoodPickup(entityView.Entity, currentPlayer, isSoda);
+                });
+
+            _foodTriggers.Add(foodTrigger);
+
+            var exitTrigger = triggerObservable
+                .Where(x => x.gameObject.tag == "Exit")
+                .Subscribe(x =>
+                {
+                    var entityView = x.gameObject.GetComponent<EntityView>();
+                    HandleExit(entityView.Entity, currentPlayer);
+                });
+
+            _exitTriggers.Add(exitTrigger);
         }
 
         private void HandleFoodPickup(IEntity food, IEntity player, bool isSoda)

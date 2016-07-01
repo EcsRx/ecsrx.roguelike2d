@@ -1,5 +1,5 @@
-﻿using System;
-using Assets.Game.Components;
+﻿using Assets.Game.Components;
+using Assets.Game.Configuration;
 using Assets.Game.Events;
 using EcsRx.Entities;
 using EcsRx.Events;
@@ -12,9 +12,10 @@ namespace Assets.Game.Systems
 {
     public class PlayerMovementSystem : IReactToGroupSystem
     {
-        private IEventSystem _eventSystem;
         private readonly IGroup _targetGroup = new Group(typeof(MovementComponent), typeof(PlayerComponent));
         public IGroup TargetGroup { get { return _targetGroup; } }
+
+        private readonly IEventSystem _eventSystem;
 
         public IObservable<GroupAccessor> ReactToGroup(GroupAccessor @group)
         {

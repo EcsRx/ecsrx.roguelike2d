@@ -2,10 +2,14 @@
 using Assets.Game.Blueprints;
 using Assets.Game.Components;
 using Assets.Game.Configuration;
+using EcsRx.Entities;
+using EcsRx.Events;
 using EcsRx.Extensions;
 using EcsRx.Pools;
 using EcsRx.Unity;
+using EcsRx.Unity.Components;
 using UniRx;
+using UnityEngine;
 using Zenject;
 
 public class AppContainer : EcsRxContainer
@@ -14,6 +18,9 @@ public class AppContainer : EcsRxContainer
 
     [Inject]
     private GameConfiguration _gameConfiguration;
+
+    [Inject]
+    private IEventSystem _eventSystem;
     
     protected override void SetupSystems()
     {}
@@ -23,10 +30,18 @@ public class AppContainer : EcsRxContainer
         defaultPool = PoolManager.GetPool();
 
         var levelEntity = defaultPool.CreateEntity(new LevelBlueprint());
-        var levelComponent = levelEntity.GetComponent<LevelComponent>();
+        var player = defaultPool.CreateEntity(new PlayerBlueprint(_gameConfiguration.StartingFoodPoints));
+        var playerView = player.GetComponent<ViewComponent>();
 
-        levelComponent.Level.DistinctUntilChanged()
-            .Subscribe(x => SetupLevel(levelComponent));
+        _eventSystem.Receive<ComponentAddedEvent>().Where(x => x.Entity == levelEntity && x.Component is LevelComponent)
+            .Subscribe(x =>
+            {
+                SetupLevel(x.Component as LevelComponent);
+                playerView.View.transform.position = Vector3.zero;
+            });
+        
+        var levelComponent = levelEntity.GetComponent<LevelComponent>();
+        SetupLevel(levelComponent);
     }
 
     private void SetupLevel(LevelComponent levelComponent)
@@ -35,7 +50,7 @@ public class AppContainer : EcsRxContainer
 
         defaultPool.RemoveEntitiesContaining(typeof(GameBoardComponent),
             typeof(FoodComponent), typeof(WallComponent),
-            typeof(EnemyComponent));
+            typeof(EnemyComponent), typeof(ExitComponent));
 
         Observable.Interval(TimeSpan.FromSeconds(_gameConfiguration.IntroLength))
             .First()
@@ -53,6 +68,5 @@ public class AppContainer : EcsRxContainer
         { defaultPool.CreateEntity(new EnemyBlueprint()); }
 
         defaultPool.CreateEntity(new ExitBlueprint());
-        defaultPool.CreateEntity(new PlayerBlueprint(_gameConfiguration.StartingFoodPoints));
     }
 }

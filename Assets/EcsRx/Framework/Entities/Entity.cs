@@ -5,6 +5,7 @@ using EcsRx.Components;
 using EcsRx.Events;
 using EcsRx.Extensions;
 using UniRx;
+using UnityEngine;
 
 namespace EcsRx.Entities
 {
@@ -37,6 +38,9 @@ namespace EcsRx.Entities
         {
             if(!_components.ContainsKey(component.GetType())) { return; }
 
+            if (component is IDisposable)
+            { (component as IDisposable).Dispose(); }
+
             _components.Remove(component.GetType());
             EventSystem.Publish(new ComponentRemovedEvent(this, component));
         }
@@ -67,6 +71,15 @@ namespace EcsRx.Entities
         }
 
         public T GetComponent<T>() where T : class, IComponent
-        { return _components[typeof(T)] as T; }
+        {
+            try
+            {
+                return _components[typeof (T)] as T;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
     }
 }

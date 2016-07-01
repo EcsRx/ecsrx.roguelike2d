@@ -6,6 +6,7 @@ using Assets.Game.Configuration;
 using Assets.Game.Events;
 using EcsRx.Entities;
 using EcsRx.Events;
+using EcsRx.Extensions;
 using EcsRx.Groups;
 using EcsRx.Pools;
 using EcsRx.Systems;
@@ -23,7 +24,7 @@ namespace Assets.Game.Systems
         private IDisposable _updateSubscription;
         private bool _isProcessing;
         private readonly GroupAccessor _levelAccessor;
-        private LevelComponent _levelComponent;
+        private IEntity _level;
 
         public IGroup TargetGroup { get { return _targetGroup; } }
 
@@ -57,16 +58,13 @@ namespace Assets.Game.Systems
 
         private bool IsLevelLoaded()
         {
-            return _levelComponent != null && _levelComponent.HasLoaded.Value;
+            var levelComponent = _level.GetComponent<LevelComponent>();
+            return levelComponent != null && levelComponent.HasLoaded.Value;
         }
 
         public void StartSystem(GroupAccessor @group)
         {
-            Observable.EveryUpdate().First()
-                .Subscribe(x => {
-                    var level = _levelAccessor.Entities.First();
-                    _levelComponent = level.GetComponent<LevelComponent>();
-                });
+            this.WaitForScene().Subscribe(x => _level = _levelAccessor.Entities.First());
             
             _updateSubscription = Observable.EveryUpdate().Where(x => IsLevelLoaded())
                 .Subscribe(x => {

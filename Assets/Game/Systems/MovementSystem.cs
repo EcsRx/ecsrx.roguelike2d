@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using Assets.Game.Components;
 using Assets.Game.Configuration;
 using Assets.Game.Events;
@@ -10,7 +9,6 @@ using EcsRx.Systems;
 using EcsRx.Unity.Components;
 using EcsRx.Unity.MonoBehaviours;
 using UniRx;
-using UnityEditor;
 using UnityEngine;
 
 namespace Assets.Game.Systems
@@ -91,7 +89,7 @@ namespace Assets.Game.Systems
 
         protected IEnumerator SmoothMovement(GameObject mover, Rigidbody2D rigidBody, Vector3 destination, MovementComponent movementComponent)
         {
-            while (Vector3.Distance(mover.transform.position, destination) > 0.1f)
+            while (mover != null && Vector3.Distance(mover.transform.position, destination) > 0.1f)
             {
                 var newPostion = Vector3.MoveTowards(rigidBody.position, destination, _gameConfiguration.MovementSpeed * Time.deltaTime);
                 rigidBody.MovePosition(newPostion);
@@ -108,7 +106,7 @@ namespace Assets.Game.Systems
 
         private void PlayerHit(IEntity player, IEntity enemy)
         {
-            _eventSystem.Publish(new PlayerHitEvent(enemy, player));
+            _eventSystem.Publish(new PlayerHitEvent(player, enemy));
         }
 
         private void EnemyHit(IEntity enemy, IEntity player)

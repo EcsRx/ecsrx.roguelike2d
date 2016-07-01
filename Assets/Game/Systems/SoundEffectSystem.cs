@@ -16,13 +16,13 @@ namespace Assets.Game.Systems
     {
         public IGroup TargetGroup { get { return new EmptyGroup();} }
 
-        private AudioSource _soundEffectSource;
-        private EnemyAttackSounds _enemyAttackSounds;
-        private PlayerAttackSounds _playerAttackSounds;
-        private WalkingSounds _walkingSounds;
-        private DeathSounds _deathSounds;
-        private DrinkSounds _drinkSounds;
-        private FoodSounds _foodSounds;
+        private readonly AudioSource _soundEffectSource;
+        private readonly EnemyAttackSounds _enemyAttackSounds;
+        private readonly PlayerAttackSounds _playerAttackSounds;
+        private readonly WalkingSounds _walkingSounds;
+        private readonly DeathSounds _deathSounds;
+        private readonly DrinkSounds _drinkSounds;
+        private readonly FoodSounds _foodSounds;
 
         private readonly IEventSystem _eventSystem;
         private List<IDisposable> _subscriptions = new List<IDisposable>();

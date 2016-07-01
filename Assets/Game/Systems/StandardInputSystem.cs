@@ -24,6 +24,9 @@ namespace Assets.Game.Systems
 
         public void Execute(IEntity entity)
         {
+            var movementComponent = entity.GetComponent<MovementComponent>();
+            if(movementComponent.Movement.Value != Vector2.zero) { return; }
+
             var horizontal = 0;
             var vertical = 0;
 
