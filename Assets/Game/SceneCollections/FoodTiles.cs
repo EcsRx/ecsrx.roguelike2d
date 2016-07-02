@@ -11,7 +11,8 @@ namespace Assets.Game.SceneCollections
         {
             AvailableTiles = new[]
             {
-                Resources.Load<GameObject>("Prefabs/Food")
+                Resources.Load<GameObject>("Prefabs/Food"),
+                Resources.Load<GameObject>("Prefabs/Soda"),
             };
         }
     }

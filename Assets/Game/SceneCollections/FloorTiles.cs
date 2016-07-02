@@ -19,8 +19,7 @@ namespace Assets.Game.SceneCollections
                 Resources.Load<GameObject>("Prefabs/Floor5"),
                 Resources.Load<GameObject>("Prefabs/Floor6"),
                 Resources.Load<GameObject>("Prefabs/Floor7"),
-                Resources.Load<GameObject>("Prefabs/Floor8"),
-                Resources.Load<GameObject>("Prefabs/Floor9")
+                Resources.Load<GameObject>("Prefabs/Floor8")
             };
         }
     }

@@ -11,7 +11,7 @@ namespace Assets.Game.Blueprints
     {
         private EnemyTypes GetRandomEnemyType()
         {
-            var enemyValue = Random.Range(0, 1);
+            var enemyValue = Random.Range(0, 2); // Its exclusive on max, ask unity...
             return (EnemyTypes) enemyValue;
         }
 

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine;
 using Random = UnityEngine.Random;
 
 namespace Assets.Game.Extensions
@@ -12,8 +13,8 @@ namespace Assets.Game.Extensions
             var availableCount = source.Count();
             if (availableCount == 0) { throw new Exception("Unable to pick random number from empty list"); }
 
-            var random = Random.Range(0, availableCount - 1);
-            return source.Skip(random).First();
+            var random = Random.Range(0, availableCount);
+            return source.ElementAt(random);
         }
 
         public static IEnumerable<T> TakeRandom<T>(this IEnumerable<T> source, int count)
@@ -25,8 +26,8 @@ namespace Assets.Game.Extensions
             var randomElements = new List<T>();
             for (var i = 0; i < count; i++)
             {
-                var random = Random.Range(0, availableCount - 1);
-                var randomElement = source.Skip(random).First();
+                var random = Random.Range(0, availableCount);
+                var randomElement = source.ElementAt(random);
                 if (randomElements.Contains(randomElement))
                 {
                     i--;

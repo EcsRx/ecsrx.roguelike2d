@@ -1,4 +1,5 @@
-﻿using Assets.EcsRx.Framework.Attributes;
+﻿using System.Linq;
+using Assets.EcsRx.Framework.Attributes;
 using Assets.Game.Components;
 using Assets.Game.Extensions;
 using Assets.Game.Groups;
@@ -32,7 +33,9 @@ namespace Assets.Game.ViewResolvers
 
         public override GameObject ResolveView(IEntity entity)
         {
-            var tileChoice = _foodTiles.AvailableTiles.TakeRandom();
+            var foodComponent = entity.GetComponent<FoodComponent>();
+            var foodTileIndex = foodComponent.IsSoda ? 1 : 0;
+            var tileChoice = _foodTiles.AvailableTiles.ElementAt(foodTileIndex);
             var gameObject = Object.Instantiate(tileChoice, Vector3.zero, Quaternion.identity) as GameObject;
             gameObject.name = string.Format("food-{0}", entity.Id);
             return gameObject;

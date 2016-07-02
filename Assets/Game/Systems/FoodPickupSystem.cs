@@ -9,12 +9,10 @@ namespace Assets.Game.Systems
 {
     public class FoodPickupSystem : EventReactionSystem<FoodPickupEvent>
     {
-        private IPoolManager _poolManager;
+        private readonly IPoolManager _poolManager;
 
         public FoodPickupSystem(IEventSystem eventSystem, IPoolManager poolManager) : base(eventSystem)
-        {
-            _poolManager = poolManager;
-        }
+        { _poolManager = poolManager; }
 
         public override void EventTriggered(FoodPickupEvent eventData)
         {

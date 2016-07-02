@@ -32,7 +32,8 @@ namespace Assets.Game.ViewResolvers
         public override GameObject ResolveView(IEntity entity)
         {
             var enemyComponent = entity.GetComponent<EnemyComponent>();
-            var tileChoice = _enemyTiles.AvailableTiles.ElementAt((int) enemyComponent.EnemyType);
+            var enemyType = (int)enemyComponent.EnemyType;
+            var tileChoice = _enemyTiles.AvailableTiles.ElementAt(enemyType);
             var gameObject = Object.Instantiate(tileChoice, Vector3.zero, Quaternion.identity) as GameObject;
             gameObject.name = string.Format("enemy-{0}", entity.Id);
             return gameObject;
