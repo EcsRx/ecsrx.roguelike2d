@@ -59,6 +59,10 @@ namespace Assets.Game.Systems
                 .Subscribe(x => PlayOneOf(_playerAttackSounds.AvailableClips))
                 .AddTo(_subscriptions);
 
+            _eventSystem.Receive<WallHitEvent>()
+                .Subscribe(x => PlayOneOf(_playerAttackSounds.AvailableClips))
+                .AddTo(_subscriptions);
+
             _eventSystem.Receive<PlayerHitEvent>()
                 .Subscribe(x => PlayOneOf(_enemyAttackSounds.AvailableClips))
                 .AddTo(_subscriptions);

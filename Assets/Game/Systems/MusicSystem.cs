@@ -1,6 +1,11 @@
-﻿using System.Linq;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using Assets.Game.Components;
+using Assets.Game.Events;
 using EcsRx.Entities;
+using EcsRx.Events;
+using EcsRx.Extensions;
 using EcsRx.Groups;
 using EcsRx.Systems;
 using UniRx;
@@ -8,55 +13,54 @@ using UnityEngine;
 
 namespace Assets.Game.Systems
 {
-    /*
+    
     public class MusicSystem : IManualSystem
     {
-        private readonly IGroup _targetGroup = new Group(typeof(PlayerComponent));
-        public IGroup TargetGroup { get { return _targetGroup; } }
+        public IGroup TargetGroup { get { return new Group(typeof(LevelComponent)); } }
 
-        private AudioSource _musicSource;
-        private PlayerComponent _playerComponent;
+        private readonly IEventSystem _eventSystem;
+        private readonly AudioSource _musicSource;
+        private LevelComponent _levelComponent;
+        private readonly IList<IDisposable> _subscriptions = new List<IDisposable>();
 
-        public MusicSystem()
+        public MusicSystem(IEventSystem eventSystem)
         {
             var soundEffectObject = GameObject.Find("MusicSource");
             _musicSource = soundEffectObject.GetComponent<AudioSource>();
-        }
-
-        public IObservable<IEntity> ReactToEntity(IEntity entity)
-        {
-            return 
-        }
-
-        public void Execute(IEntity entity)
-        {
-            _musicSource.Stop();
-        }
-
-        public bool IsPlayerAlive()
-        {
-            return _playerComponent != null && _playerComponent.Food.Value > 0;
+            _eventSystem = eventSystem;
         }
 
         public void StartSystem(GroupAccessor @group)
         {
-            Observable.EveryUpdate().First()
-                .Subscribe(x => {
-                    var player = @group.Entities.First();
-                    _playerComponent = player.GetComponent<PlayerComponent>();
+            this.WaitForScene()
+                .Subscribe(x =>
+                {
+                    var level = @group.Entities.First();
+                    _levelComponent = level.GetComponent<LevelComponent>();
+                    SetupSubscriptions();
                 });
-
-
-
-            var s = entity.GetComponent<PlayerComponent>().Food.Where(x => x <= 0).Select(x => entity);
         }
 
-        private void StopPlaying
+        private void SetupSubscriptions()
+        {
+            _eventSystem.Receive<PlayerKilledEvent>()
+                .Subscribe(x => _musicSource.Stop())
+                .AddTo(_subscriptions);
+
+            _levelComponent.HasLoaded
+                .DistinctUntilChanged(hasLoaded => hasLoaded)
+                .Subscribe(x =>
+                {
+                    if(!_musicSource.isPlaying)
+                    { _musicSource.Play(); }
+                })
+                .AddTo(_subscriptions);
+        }
 
         public void StopSystem(GroupAccessor @group)
         {
-            throw new System.NotImplementedException();
+            _subscriptions.DisposeAll();
         }
     }
-    */
+    
 }

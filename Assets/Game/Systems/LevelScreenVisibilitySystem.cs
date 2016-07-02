@@ -44,7 +44,7 @@ namespace Assets.Game.Systems
                 .AddTo(_subscriptions);
 
             _eventSystem.Receive<PlayerKilledEvent>()
-                .Subscribe(x => _levelImage.SetActive(true))
+                .Subscribe(x => _levelComponent.HasLoaded.Value = false)
                 .AddTo(_subscriptions);
         }
 
