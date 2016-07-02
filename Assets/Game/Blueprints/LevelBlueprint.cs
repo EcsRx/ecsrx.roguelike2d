@@ -13,7 +13,7 @@ namespace Assets.Game.Blueprints
         private readonly int _maxFood = 5;
         private readonly int _level;
 
-        public LevelBlueprint(int level = 10)
+        public LevelBlueprint(int level = 1)
         {
             _level = level;
         }
