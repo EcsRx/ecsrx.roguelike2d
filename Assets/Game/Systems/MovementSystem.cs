@@ -89,9 +89,9 @@ namespace Assets.Game.Systems
 
         protected IEnumerator SmoothMovement(GameObject mover, Rigidbody2D rigidBody, Vector3 destination, MovementComponent movementComponent)
         {
-            while (Vector3.Distance(mover.transform.position, destination) > 0.1f)
+            while (mover != null && Vector3.Distance(mover.transform.position, destination) > 0.1f)
             {
-                if (mover == null || movementComponent.StopMovement)
+                if (movementComponent.StopMovement)
                 {
                     movementComponent.Movement.Value = Vector2.zero;
                     movementComponent.StopMovement = false;
@@ -102,7 +102,10 @@ namespace Assets.Game.Systems
                 rigidBody.MovePosition(newPostion);
                 yield return null;
             }
-            mover.transform.position = destination;
+
+            if(mover != null)
+            { mover.transform.position = destination; }
+
             movementComponent.Movement.Value = Vector2.zero;
         }
 

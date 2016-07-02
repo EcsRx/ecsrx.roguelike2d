@@ -30,7 +30,8 @@ public class AppContainer : EcsRxContainer
     {
         defaultPool = PoolManager.GetPool();
 
-        var levelEntity = defaultPool.CreateEntity(new LevelBlueprint());
+        var levelBlueprint = new LevelBlueprint();
+        var levelEntity = defaultPool.CreateEntity(levelBlueprint);
         var player = defaultPool.CreateEntity(new PlayerBlueprint(_gameConfiguration.StartingFoodPoints));
         var playerView = player.GetComponent<ViewComponent>();
         var playerComponent = player.GetComponent<PlayerComponent>();
@@ -44,10 +45,9 @@ public class AppContainer : EcsRxContainer
 
         _eventSystem.Receive<PlayerKilledEvent>()
             .Delay(TimeSpan.FromSeconds(_gameConfiguration.IntroLength))
-            //.DelaySubscription(TimeSpan.FromSeconds(_gameConfiguration.IntroLength))
             .Subscribe(x =>
             {
-                levelComponent.Level.Value = 1;
+                levelBlueprint.UpdateLevel(levelComponent, 1);
                 playerComponent.Food.Value = _gameConfiguration.StartingFoodPoints;
                 SetupLevel(levelComponent);
             });
