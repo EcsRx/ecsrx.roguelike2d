@@ -3,7 +3,6 @@ using Assets.Game.Blueprints;
 using Assets.Game.Components;
 using Assets.Game.Configuration;
 using Assets.Game.Events;
-using EcsRx.Entities;
 using EcsRx.Events;
 using EcsRx.Extensions;
 using EcsRx.Pools;
@@ -13,7 +12,7 @@ using UniRx;
 using UnityEngine;
 using Zenject;
 
-public class AppContainer : EcsRxContainer
+public class Application : EcsRxApplication
 {
     private IPool defaultPool;
 
@@ -23,10 +22,7 @@ public class AppContainer : EcsRxContainer
     [Inject]
     private IEventSystem _eventSystem;
     
-    protected override void SetupSystems()
-    {}
-
-    protected override void SetupEntities()
+    protected override void GameStarted()
     {
         defaultPool = PoolManager.GetPool();
 

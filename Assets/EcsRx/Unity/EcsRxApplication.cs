@@ -9,7 +9,7 @@ using Zenject;
 
 namespace EcsRx.Unity
 {
-    public abstract class EcsRxContainer : MonoBehaviour
+    public abstract class EcsRxApplication : MonoBehaviour
     {
         [Inject]
         public ISystemExecutor SystemExecutor { get; private set; }
@@ -19,7 +19,7 @@ namespace EcsRx.Unity
 
         protected List<IEcsRxPlugin> Plugins { get; private set; }
 
-        protected EcsRxContainer()
+        protected EcsRxApplication()
         {
             Plugins = new List<IEcsRxPlugin>();
         }
@@ -29,12 +29,10 @@ namespace EcsRx.Unity
         {
             RegisterAllPluginDependencies(container);
             SetupAllPluginSystems(container);
-            SetupSystems();
-            SetupEntities();
+            GameStarted();
         }
 
-        protected abstract void SetupSystems();
-        protected abstract void SetupEntities();
+        protected abstract void GameStarted();
 
         protected virtual void RegisterAllPluginDependencies(DiContainer container)
         { Plugins.ForEachRun(x => x.SetupDependencies(container)); }

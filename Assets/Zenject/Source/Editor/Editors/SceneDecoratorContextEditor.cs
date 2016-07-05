@@ -130,7 +130,7 @@ namespace Zenject
         {
             serializedObject.Update();
 
-            if (Application.isPlaying)
+            if (UnityEngine.Application.isPlaying)
             {
                 GUI.enabled = false;
             }

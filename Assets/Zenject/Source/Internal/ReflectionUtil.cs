@@ -146,7 +146,7 @@ namespace ModestTree.Util
 #if NOT_UNITY3D
                     return _propInfo.GetValue(instance, null);
 #else
-                    if (Application.platform == RuntimePlatform.WebGLPlayer)
+                    if (UnityEngine.Application.platform == RuntimePlatform.WebGLPlayer)
                     {
                         // GetValue() doesn't work on webgl for some reason
                         // This is a bit slower though so only do this on webgl

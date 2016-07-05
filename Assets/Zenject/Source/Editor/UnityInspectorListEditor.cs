@@ -78,7 +78,7 @@ namespace Zenject
 
         protected virtual void OnGui()
         {
-            if (Application.isPlaying)
+            if (UnityEngine.Application.isPlaying)
             {
                 GUI.enabled = false;
             }

@@ -26,7 +26,7 @@ namespace Zenject
         [MenuItem("Edit/Zenject/Help...")]
         public static void OpenDocumentation()
         {
-            Application.OpenURL("https://github.com/modesttree/zenject");
+            UnityEngine.Application.OpenURL("https://github.com/modesttree/zenject");
         }
 
         [MenuItem("GameObject/Zenject/Scene Context", false, 9)]
@@ -59,7 +59,7 @@ namespace Zenject
         [MenuItem("Edit/Zenject/Create Project Context")]
         public static void CreateProjectContextInDefaultLocation()
         {
-            var fullDirPath = Path.Combine(Application.dataPath, "Resources");
+            var fullDirPath = Path.Combine(UnityEngine.Application.dataPath, "Resources");
 
             if (!Directory.Exists(fullDirPath))
             {

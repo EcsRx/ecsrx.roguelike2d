@@ -18,7 +18,7 @@ namespace Zenject
         public static string ConvertFullAbsolutePathToAssetPath(string fullPath)
         {
             return "Assets/" + Path.GetFullPath(fullPath)
-                .Substring(Path.GetFullPath(Application.dataPath).Length + 1)
+                .Substring(Path.GetFullPath(UnityEngine.Application.dataPath).Length + 1)
                 .Replace("\\", "/");
         }
 
@@ -47,7 +47,7 @@ namespace Zenject
                 if (!string.IsNullOrEmpty(relativePath))
                 {
                     var fullPath = Path.GetFullPath(Path.Combine(
-                        Application.dataPath, Path.Combine("..", relativePath)));
+                        UnityEngine.Application.dataPath, Path.Combine("..", relativePath)));
 
                     paths.Add(fullPath);
                 }

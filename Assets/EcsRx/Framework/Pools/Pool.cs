@@ -47,10 +47,9 @@ namespace EcsRx.Pools
 
             foreach (var component in entity.Components)
             {
-                if (component is IDisposable)
+                if(component is IDisposable)
                 { (component as IDisposable).Dispose(); }
             }
-
 
             EventSystem.Publish(new EntityRemovedEvent(entity, this));
         }

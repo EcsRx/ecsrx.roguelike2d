@@ -104,7 +104,7 @@ namespace Zenject
             SceneContext.BeforeInstallHooks = preBindings;
             SceneContext.AfterInstallHooks = postBindings;
 
-            Assert.That(Application.CanStreamedLevelBeLoaded(sceneName),
+            Assert.That(UnityEngine.Application.CanStreamedLevelBeLoaded(sceneName),
                 "Unable to load scene '{0}'", sceneName);
 
             SceneManager.LoadScene(sceneName, loadMode);
