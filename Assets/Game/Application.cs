@@ -21,7 +21,12 @@ public class Application : EcsRxApplication
 
     [Inject]
     private IEventSystem _eventSystem;
-    
+
+    protected override void GameStarting()
+    {
+        RegisterAllBoundSystems();
+    }
+
     protected override void GameStarted()
     {
         defaultPool = PoolManager.GetPool();
