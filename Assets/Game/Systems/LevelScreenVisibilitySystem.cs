@@ -25,7 +25,7 @@ namespace Assets.Game.Systems
         public LevelScreenVisibilitySystem(IEventSystem eventSystem)
         { _eventSystem = eventSystem; }
 
-        public void StartSystem(GroupAccessor @group)
+        public void StartSystem(IGroupAccessor @group)
         {
             this.WaitForScene()
                 .Subscribe(x =>
@@ -48,7 +48,7 @@ namespace Assets.Game.Systems
                 .AddTo(_subscriptions);
         }
 
-        public void StopSystem(GroupAccessor @group)
+        public void StopSystem(IGroupAccessor @group)
         {
             _subscriptions.DisposeAll();
         }

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Assets.Game.Components;
 using Assets.Game.Events;
-using EcsRx.Entities;
 using EcsRx.Events;
 using EcsRx.Extensions;
 using EcsRx.Groups;
@@ -30,7 +29,7 @@ namespace Assets.Game.Systems
             _eventSystem = eventSystem;
         }
 
-        public void StartSystem(GroupAccessor @group)
+        public void StartSystem(IGroupAccessor @group)
         {
             this.WaitForScene()
                 .Subscribe(x =>
@@ -57,7 +56,7 @@ namespace Assets.Game.Systems
                 .AddTo(_subscriptions);
         }
 
-        public void StopSystem(GroupAccessor @group)
+        public void StopSystem(IGroupAccessor @group)
         {
             _subscriptions.DisposeAll();
         }

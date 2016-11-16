@@ -11,7 +11,6 @@ using EcsRx.Unity.Components;
 using EcsRx.Unity.MonoBehaviours;
 using UniRx;
 using UniRx.Triggers;
-using UnityEngine;
 
 namespace Assets.Game.Systems
 {
@@ -33,7 +32,7 @@ namespace Assets.Game.Systems
             _eventSystem = eventSystem;
         }
 
-        public void StartSystem(GroupAccessor @group)
+        public void StartSystem(IGroupAccessor @group)
         {
             this.WaitForScene().Subscribe(x =>
             {
@@ -42,7 +41,7 @@ namespace Assets.Game.Systems
             });
         }
 
-        public void StopSystem(GroupAccessor @group)
+        public void StopSystem(IGroupAccessor @group)
         {
             _foodTriggers.DisposeAll();
             _exitTriggers.DisposeAll();

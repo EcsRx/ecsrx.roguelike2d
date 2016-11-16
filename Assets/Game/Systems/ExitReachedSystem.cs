@@ -19,7 +19,7 @@ namespace Assets.Game.Systems
         public ExitReachedSystem(IEventSystem eventSystem) : base(eventSystem)
         {}
 
-        public override void StartSystem(GroupAccessor @group)
+        public override void StartSystem(IGroupAccessor @group)
         {
             base.StartSystem(@group);
             this.WaitForScene().Subscribe(x => _level = @group.Entities.First());

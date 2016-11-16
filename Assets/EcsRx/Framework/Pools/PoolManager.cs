@@ -63,7 +63,7 @@ namespace EcsRx.Pools
             return Pools.GetAllEntities().MatchingGroup(group);
         }
 
-        public GroupAccessor CreateGroupAccessor(IGroup group, string poolName = null)
+        public IGroupAccessor CreateGroupAccessor(IGroup group, string poolName = null)
         {
             var groupAccessorToken = new GroupAccessorToken(group.TargettedComponents.ToArray(), poolName);
             if (!_groupAccessors.ContainsKey(groupAccessorToken))
@@ -72,7 +72,9 @@ namespace EcsRx.Pools
                 _groupAccessors.Add(groupAccessorToken, entityMatches);
             }
 
-            return new GroupAccessor(groupAccessorToken, _groupAccessors[groupAccessorToken]);
+            var groupAccessor = new CacheableGroupAccessor(groupAccessorToken, _groupAccessors[groupAccessorToken], EventSystem);
+            groupAccessor.MonitorEntityChanges();
+            return groupAccessor;
         }
     }
 }

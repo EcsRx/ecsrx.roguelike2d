@@ -19,15 +19,15 @@ namespace Assets.Game.Systems
         private readonly IGroup _targetGroup = new Group(typeof(PlayerComponent));
         public IGroup TargetGroup { get { return _targetGroup; } }
 
-        private IEventSystem _eventSystem;
+        private readonly IEventSystem _eventSystem;
         private PlayerComponent _playerComponent;
         private Text _foodText;
-        private IList<IDisposable> _subscriptions = new List<IDisposable>();
+        private readonly IList<IDisposable> _subscriptions = new List<IDisposable>();
 
         public FoodTextUpdateSystem(IEventSystem eventSystem)
         { _eventSystem = eventSystem; }
 
-        public void StartSystem(GroupAccessor @group)
+        public void StartSystem(IGroupAccessor @group)
         {
             this.WaitForScene().Subscribe(x =>
             {
@@ -62,7 +62,7 @@ namespace Assets.Game.Systems
                 .AddTo(_subscriptions);
         }
 
-        public void StopSystem(GroupAccessor @group)
+        public void StopSystem(IGroupAccessor @group)
         {
             _subscriptions.DisposeAll();
         }

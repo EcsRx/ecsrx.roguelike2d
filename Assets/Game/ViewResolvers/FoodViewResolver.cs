@@ -1,9 +1,7 @@
 ﻿using System.Linq;
-using Assets.EcsRx.Framework.Attributes;
 using Assets.Game.Components;
-using Assets.Game.Extensions;
-using Assets.Game.Groups;
 using Assets.Game.SceneCollections;
+using EcsRx.Attributes;
 using EcsRx.Entities;
 using EcsRx.Events;
 using EcsRx.Groups;

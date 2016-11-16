@@ -1,6 +1,6 @@
-﻿using Assets.EcsRx.Framework.Attributes;
-using Assets.Game.Components;
+﻿using Assets.Game.Components;
 using Assets.Game.Groups;
+using EcsRx.Attributes;
 using EcsRx.Entities;
 using EcsRx.Groups;
 using EcsRx.Systems;

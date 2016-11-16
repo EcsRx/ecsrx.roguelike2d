@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using Assets.Game.Components;
-using Assets.Game.Events;
+﻿using Assets.Game.Components;
 using EcsRx.Entities;
-using EcsRx.Events;
-using EcsRx.Extensions;
 using EcsRx.Groups;
 using EcsRx.Systems;
 using UniRx;
@@ -17,7 +12,7 @@ namespace Assets.Game.Systems
         private readonly IGroup _targetGroup = new Group(typeof(MovementComponent), typeof(StandardInputComponent));
         public IGroup TargetGroup { get { return _targetGroup; } }
 
-        public IObservable<GroupAccessor> ReactToGroup(GroupAccessor @group)
+        public IObservable<IGroupAccessor> ReactToGroup(IGroupAccessor @group)
         {
             return Observable.EveryUpdate().Select(x => @group);
         }

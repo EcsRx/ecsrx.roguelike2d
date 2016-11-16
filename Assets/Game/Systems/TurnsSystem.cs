@@ -23,7 +23,7 @@ namespace Assets.Game.Systems
 
         private IDisposable _updateSubscription;
         private bool _isProcessing;
-        private readonly GroupAccessor _levelAccessor;
+        private readonly IGroupAccessor _levelAccessor;
         private IEntity _level;
 
         public IGroup TargetGroup { get { return _targetGroup; } }
@@ -36,7 +36,7 @@ namespace Assets.Game.Systems
             _levelAccessor = poolManager.CreateGroupAccessor(new Group(typeof (LevelComponent)));
         }
         
-        private IEnumerator CarryOutTurns(GroupAccessor @group)
+        private IEnumerator CarryOutTurns(IGroupAccessor @group)
         {
             _isProcessing = true;
             yield return new WaitForSeconds(_gameConfiguration.TurnDelay);
@@ -44,7 +44,7 @@ namespace Assets.Game.Systems
             if(!@group.Entities.Any())
             { yield return new WaitForSeconds(_gameConfiguration.TurnDelay); }
 
-            var enemies = @group.Entities.ToArray();
+            var enemies = @group.Entities;
             foreach (var enemy in enemies)
             {
                 _eventSystem.Publish(new EnemyTurnEvent(enemy));
@@ -62,7 +62,7 @@ namespace Assets.Game.Systems
             return levelComponent != null && levelComponent.HasLoaded.Value;
         }
 
-        public void StartSystem(GroupAccessor @group)
+        public void StartSystem(IGroupAccessor @group)
         {
             this.WaitForScene().Subscribe(x => _level = _levelAccessor.Entities.First());
             
@@ -73,7 +73,7 @@ namespace Assets.Game.Systems
                 });
         }
 
-        public void StopSystem(GroupAccessor @group)
+        public void StopSystem(IGroupAccessor @group)
         {
             _updateSubscription.Dispose();
         }

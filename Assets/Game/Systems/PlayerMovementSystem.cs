@@ -17,7 +17,7 @@ namespace Assets.Game.Systems
 
         private readonly IEventSystem _eventSystem;
 
-        public IObservable<GroupAccessor> ReactToGroup(GroupAccessor @group)
+        public IObservable<IGroupAccessor> ReactToGroup(IGroupAccessor @group)
         {
             return _eventSystem.Receive<PlayerTurnEvent>().Select(x => @group);
         }

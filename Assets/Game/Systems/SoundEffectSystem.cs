@@ -44,7 +44,7 @@ namespace Assets.Game.Systems
             _soundEffectSource = soundEffectObject.GetComponent<AudioSource>();
         }
 
-        public void StartSystem(GroupAccessor @group)
+        public void StartSystem(IGroupAccessor @group)
         {
             _eventSystem.Receive<FoodPickupEvent>().Subscribe(x => {
                 var clips = x.IsSoda ? _drinkSounds.AvailableClips : _foodSounds.AvailableClips;
@@ -78,7 +78,7 @@ namespace Assets.Game.Systems
             _soundEffectSource.PlayOneShot(audioSource);
         }
 
-        public void StopSystem(GroupAccessor @group)
+        public void StopSystem(IGroupAccessor @group)
         {
             _subscriptions.DisposeAll();
         }

@@ -1,14 +1,13 @@
 ﻿using System.Linq;
-using Assets.EcsRx.Framework.Attributes;
 using Assets.Game.Components;
 using Assets.Game.Extensions;
 using Assets.Game.Groups;
+using EcsRx.Attributes;
 using EcsRx.Entities;
 using EcsRx.Groups;
 using EcsRx.Pools;
 using EcsRx.Systems;
 using EcsRx.Unity.Components;
-using UnityEngine;
 
 namespace Assets.Game.Systems
 {

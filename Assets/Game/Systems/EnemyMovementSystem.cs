@@ -15,7 +15,7 @@ namespace Assets.Game.Systems
     public class EnemyMovementSystem : IReactToEntitySystem
     {
         private readonly IEventSystem _eventSystem;
-        private readonly GroupAccessor _playerAccessor;
+        private readonly IGroupAccessor _playerAccessor;
         private readonly IGroup _targetGroup = new Group(typeof(MovementComponent), typeof(EnemyComponent));
 
         public IGroup TargetGroup { get { return _targetGroup; } }

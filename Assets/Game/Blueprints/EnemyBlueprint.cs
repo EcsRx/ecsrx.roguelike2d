@@ -1,6 +1,6 @@
-﻿using Assets.EcsRx.Framework.Blueprints;
-using Assets.Game.Components;
+﻿using Assets.Game.Components;
 using Assets.Game.Enums;
+using EcsRx.Blueprints;
 using EcsRx.Entities;
 using EcsRx.Unity.Components;
 using Random = UnityEngine.Random;
