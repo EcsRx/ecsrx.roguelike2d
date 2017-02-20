@@ -24,7 +24,7 @@ namespace Assets.Game.ViewResolvers
             get { return _targetGroup; }
         }
 
-        public FoodViewResolver(IPoolManager poolManager, IEventSystem eventSystem, IInstantiator instantiator, FoodTiles foodTiles) : base(poolManager, eventSystem, instantiator)
+        public FoodViewResolver(IViewHandler viewHandler, FoodTiles foodTiles) : base(viewHandler)
         {
             _foodTiles = foodTiles;
         }

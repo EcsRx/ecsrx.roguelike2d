@@ -60,7 +60,19 @@ namespace EcsRx.Systems.Executor
 
             var applicableSystems = _systems.GetApplicableSystems(originalComponents);
             var effectedSystems = applicableSystems.Where(x => x.TargetGroup.TargettedComponents.Contains(args.Component.GetType()));
-            effectedSystems.ForEachRun(system => _systemSubscriptions[system].Where(subscription => subscription.AssociatedObject == args.Entity));
+
+            foreach (var effectedSystem in effectedSystems)
+            {
+                if (effectedSystem is ITeardownSystem)
+                { (effectedSystem as ITeardownSystem).Teardown(args.Entity); }
+
+                var subscriptionTokens = _systemSubscriptions[effectedSystem]
+                    .Where(x => x.AssociatedObject == args.Entity)
+                    .ToList();
+
+                _systemSubscriptions[effectedSystem].RemoveAllFrom(subscriptionTokens);
+                subscriptionTokens.DisposeAll();
+            }
         }
 
         public void OnEntityComponentAdded(ComponentAddedEvent args)
@@ -119,8 +131,8 @@ namespace EcsRx.Systems.Executor
             var subscriptionTokens = subscriptionList.GetTokensFor(entity).ToArray();
 
             if (!subscriptionTokens.Any()) { return; }
-
-            subscriptionTokens.ForEachRun(x => subscriptionList.Remove(x));
+            
+            subscriptionList.RemoveAllFrom(subscriptionTokens);
             subscriptionTokens.DisposeAll();
         }
 
@@ -133,7 +145,9 @@ namespace EcsRx.Systems.Executor
 
             if (_systemSubscriptions.ContainsKey(system))
             {
-                _systemSubscriptions[system].DisposeAll();
+                if(_systemSubscriptions[system].Count > 0)
+                { _systemSubscriptions[system].DisposeAll(); }
+
                 _systemSubscriptions.Remove(system);
             }
         }

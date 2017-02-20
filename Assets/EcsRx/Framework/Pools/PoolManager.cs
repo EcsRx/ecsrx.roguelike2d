@@ -5,8 +5,6 @@ using EcsRx.Entities;
 using EcsRx.Events;
 using EcsRx.Extensions;
 using EcsRx.Groups;
-using EcsRx.Pools.Identifiers;
-using UniRx;
 
 namespace EcsRx.Pools
 {
@@ -19,20 +17,24 @@ namespace EcsRx.Pools
 
         public IEventSystem EventSystem { get; private set; }
         public IEnumerable<IPool> Pools { get { return _pools.Values; } }
-        public IIdentityGenerator IdentityGenerator { get; private set; }
+        public IPoolFactory PoolFactory { get; private set; }
+        public IGroupAccessorFactory GroupAccessorFactory { get; private set; }
 
-        public PoolManager(IIdentityGenerator identityGenerator, IEventSystem eventSystem)
+        public PoolManager(IEventSystem eventSystem, IPoolFactory poolFactory, IGroupAccessorFactory groupAccessorFactory)
         {
-            IdentityGenerator = identityGenerator;
             EventSystem = eventSystem;
+            PoolFactory = poolFactory;
+            GroupAccessorFactory = groupAccessorFactory;
+
             _groupAccessors = new Dictionary<GroupAccessorToken, IGroupAccessor>();
             _pools = new Dictionary<string, IPool>();
+
             CreatePool(DefaultPoolName);
         }
         
         public IPool CreatePool(string name)
         {
-            var pool = new Pool(name, IdentityGenerator, EventSystem);
+            var pool = PoolFactory.Create(name);
             _pools.Add(name, pool);
 
             EventSystem.Publish(new PoolAddedEvent(pool));
@@ -70,8 +72,12 @@ namespace EcsRx.Pools
             if (_groupAccessors.ContainsKey(groupAccessorToken)) { return _groupAccessors[groupAccessorToken]; }
 
             var entityMatches = GetEntitiesFor(@group, poolName);
-            var groupAccessor = new CacheableGroupAccessor(groupAccessorToken, entityMatches, EventSystem);
-            groupAccessor.MonitorEntityChanges();
+            var groupAccessor = GroupAccessorFactory.Create(new GroupAccessorConfiguration
+            {
+                GroupAccessorToken = groupAccessorToken,
+                InitialEntities = entityMatches
+            });
+            
             _groupAccessors.Add(groupAccessorToken, groupAccessor);
 
             return _groupAccessors[groupAccessorToken];

@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using EcsRx.Blueprints;
 using EcsRx.Entities;
 using EcsRx.Events;
-using EcsRx.Pools.Identifiers;
 
 namespace EcsRx.Pools
 {
@@ -13,21 +11,20 @@ namespace EcsRx.Pools
 
         public string Name { get; private set; }
         public IEnumerable<IEntity> Entities { get { return _entities;} }
-        public IIdentityGenerator IdentityGenerator { get; private set; }
         public IEventSystem EventSystem { get; private set; }
+        public IEntityFactory EntityFactory { get; private set; }
 
-        public Pool(string name, IIdentityGenerator identityGenerator, IEventSystem eventSystem)
+        public Pool(string name, IEntityFactory entityFactory, IEventSystem eventSystem)
         {
             _entities = new List<IEntity>();
             Name = name;
-            IdentityGenerator = identityGenerator;
             EventSystem = eventSystem;
+            EntityFactory = entityFactory;
         }
 
         public IEntity CreateEntity(IBlueprint blueprint = null)
         {
-            var newId = IdentityGenerator.GenerateId();
-            var entity = new Entity(newId, EventSystem);
+            var entity = EntityFactory.Create(null);
 
             _entities.Add(entity);
 
@@ -43,11 +40,7 @@ namespace EcsRx.Pools
         {
             _entities.Remove(entity);
 
-            foreach (var component in entity.Components)
-            {
-                if(component is IDisposable)
-                { (component as IDisposable).Dispose(); }
-            }
+            entity.Dispose();
 
             EventSystem.Publish(new EntityRemovedEvent(entity, this));
         }

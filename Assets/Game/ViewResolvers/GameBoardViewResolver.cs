@@ -25,8 +25,7 @@ namespace Assets.Game.ViewResolvers
             get { return _targetGroup; }
         }
 
-        public GameBoardViewResolver(IPoolManager poolManager, IEventSystem eventSystem, IInstantiator instantiator, 
-            FloorTiles floorTiles, OuterWallTiles wallTiles) : base(poolManager, eventSystem, instantiator)
+        public GameBoardViewResolver(IViewHandler viewHandler, FloorTiles floorTiles, OuterWallTiles wallTiles) : base(viewHandler)
         {
             _floorTiles = floorTiles;
             _outerWallTiles = wallTiles;

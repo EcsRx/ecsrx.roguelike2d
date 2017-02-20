@@ -14,31 +14,33 @@ namespace EcsRx.Entities
 
         public IEventSystem EventSystem { get; private set; }
 
-        public int Id { get; private set; }
+        public Guid Id { get; private set; }
         public IEnumerable<IComponent> Components { get { return _components.Values; } }
 
-        public Entity(int id, IEventSystem eventSystem)
+        public Entity(Guid id, IEventSystem eventSystem)
         {
             Id = id;
             EventSystem = eventSystem;
             _components = new Dictionary<Type, IComponent>();
         }
 
-        public void AddComponent(IComponent component)
+        public IComponent AddComponent(IComponent component)
         {
             _components.Add(component.GetType(), component);
             EventSystem.Publish(new ComponentAddedEvent(this, component));
+            return component;
         }
 
-        public void AddComponent<T>() where T : class, IComponent, new()
-        { AddComponent(new T()); }
+        public T AddComponent<T>() where T : class, IComponent, new()
+        { return (T)AddComponent(new T()); }
 
         public void RemoveComponent(IComponent component)
         {
             if(!_components.ContainsKey(component.GetType())) { return; }
 
-            if(component is IDisposable)
-            { (component as IDisposable).Dispose(); }
+            var disposable = component as IDisposable;
+            if (disposable != null)
+            {  disposable.Dispose(); }
 
             _components.Remove(component.GetType());
             EventSystem.Publish(new ComponentRemovedEvent(this, component));
@@ -71,5 +73,8 @@ namespace EcsRx.Entities
 
         public T GetComponent<T>() where T : class, IComponent
         { return _components[typeof(T)] as T; }
+
+        public void Dispose()
+        { RemoveAllComponents(); }
     }
 }

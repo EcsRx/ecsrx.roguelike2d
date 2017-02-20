@@ -24,7 +24,7 @@ namespace Assets.Game.ViewResolvers
             get { return _targetGroup; }
         }
 
-        public EnemyViewResolver(IPoolManager poolManager, IEventSystem eventSystem, IInstantiator instantiator, EnemyTiles enemyTiles) : base(poolManager, eventSystem, instantiator)
+        public EnemyViewResolver(IViewHandler viewHandler, EnemyTiles enemyTiles) : base(viewHandler)
         {
             _enemyTiles = enemyTiles;
         }

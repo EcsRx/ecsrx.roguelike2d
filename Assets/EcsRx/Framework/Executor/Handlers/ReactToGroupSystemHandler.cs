@@ -1,4 +1,5 @@
 using System.Linq;
+using EcsRx.Groups;
 using EcsRx.Pools;
 using UniRx;
 
@@ -15,25 +16,26 @@ namespace EcsRx.Systems.Executor.Handlers
 
         public SubscriptionToken Setup(IReactToGroupSystem system)
         {
-            var hasEntityPredicate = system.TargetGroup.TargettedEntities != null;
+            var hasEntityPredicate = system.TargetGroup is IHasPredicate;
             var groupAccessor = PoolManager.CreateGroupAccessor(system.TargetGroup);
             var subscription = system.ReactToGroup(groupAccessor)
                 .Subscribe(accessor =>
                 {
-                    var entities = accessor.Entities;
-                    var entityCount = entities.Count() - 1;
+                    var entities = accessor.Entities.ToList();
+                    var entityCount = entities.Count - 1;
                     for (var i = entityCount; i >= 0; i--)
                     {
                         if (hasEntityPredicate)
                         {
-                            if (system.TargetGroup.TargettedEntities(entities.ElementAt(i)))
+                            var groupPredicate = system.TargetGroup as IHasPredicate;
+                            if (groupPredicate.CanProcessEntity(entities[i]))
                             {
-                                system.Execute(entities.ElementAt(i));
+                                system.Execute(entities[i]);
                             }
                             return;
                         }
 
-                        system.Execute(entities.ElementAt(i));
+                        system.Execute(entities[i]);
                     }
                 });
 

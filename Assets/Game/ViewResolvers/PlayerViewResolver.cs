@@ -19,7 +19,7 @@ namespace Assets.Game.ViewResolvers
             get { return _targetGroup; }
         }
 
-        public PlayerViewResolver(IPoolManager poolManager, IEventSystem eventSystem, IInstantiator instantiator) : base(poolManager, eventSystem, instantiator) {}
+        public PlayerViewResolver(IViewHandler viewHandler) : base(viewHandler) {}
 
         public override GameObject ResolveView(IEntity entity)
         {

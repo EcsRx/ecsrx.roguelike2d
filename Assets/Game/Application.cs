@@ -22,12 +22,12 @@ public class Application : EcsRxApplication
     [Inject]
     private IEventSystem _eventSystem;
 
-    protected override void GameStarting()
+    protected override void ApplicationStarting()
     {
         RegisterAllBoundSystems();
     }
 
-    protected override void GameStarted()
+    protected override void ApplicationStarted()
     {
         defaultPool = PoolManager.GetPool();
 

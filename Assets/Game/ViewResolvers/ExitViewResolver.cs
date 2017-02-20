@@ -24,7 +24,7 @@ namespace Assets.Game.ViewResolvers
             get { return _targetGroup; }
         }
 
-        public ExitViewResolver(IPoolManager poolManager, IEventSystem eventSystem, IInstantiator instantiator, ExitTiles exitTiles) : base(poolManager, eventSystem, instantiator)
+        public ExitViewResolver(IViewHandler viewHandler, ExitTiles exitTiles) : base(viewHandler)
         {
             _exitTiles = exitTiles;
         }
