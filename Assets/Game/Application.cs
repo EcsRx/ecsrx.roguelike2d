@@ -3,48 +3,47 @@ using Assets.Game.Blueprints;
 using Assets.Game.Components;
 using Assets.Game.Configuration;
 using Assets.Game.Events;
-using EcsRx.Events;
+using EcsRx.Collections;
 using EcsRx.Extensions;
-using EcsRx.Pools;
 using EcsRx.Unity;
-using EcsRx.Unity.Components;
+using EcsRx.Unity.Extensions;
+using EcsRx.Views.Components;
 using UniRx;
 using UnityEngine;
 using Zenject;
 
-public class Application : EcsRxApplication
+public class Application : EcsRxApplicationBehaviour
 {
-    private IPool defaultPool;
+    private IEntityCollection defaultCollection;
 
     [Inject]
     private GameConfiguration _gameConfiguration;
 
-    [Inject]
-    private IEventSystem _eventSystem;
-
     protected override void ApplicationStarting()
     {
-        RegisterAllBoundSystems();
+        this.RegisterAllBoundSystems();
     }
 
     protected override void ApplicationStarted()
     {
-        defaultPool = PoolManager.GetPool();
+        defaultCollection = CollectionManager.GetCollection();
 
         var levelBlueprint = new LevelBlueprint();
-        var levelEntity = defaultPool.CreateEntity(levelBlueprint);
-        var player = defaultPool.CreateEntity(new PlayerBlueprint(_gameConfiguration.StartingFoodPoints));
+        var levelEntity = defaultCollection.CreateEntity(levelBlueprint);
+        var player = defaultCollection.CreateEntity(new PlayerBlueprint(_gameConfiguration.StartingFoodPoints));
         var playerView = player.GetComponent<ViewComponent>();
         var playerComponent = player.GetComponent<PlayerComponent>();
         var levelComponent = levelEntity.GetComponent<LevelComponent>();
 
         levelComponent.Level.DistinctUntilChanged()
-            .Subscribe(x => {
-                playerView.View.transform.position = Vector3.zero;
+            .Subscribe(x =>
+            {
+                var gameObject = playerView.View as GameObject;
+                gameObject.transform.position = Vector3.zero;
                 SetupLevel(levelComponent);
             });
 
-        _eventSystem.Receive<PlayerKilledEvent>()
+        EventSystem.Receive<PlayerKilledEvent>()
             .Delay(TimeSpan.FromSeconds(_gameConfiguration.IntroLength))
             .Subscribe(x =>
             {
@@ -58,7 +57,7 @@ public class Application : EcsRxApplication
     {
         levelComponent.HasLoaded.Value = false;
 
-        defaultPool.RemoveEntitiesContaining(typeof(GameBoardComponent),
+        defaultCollection.RemoveEntitiesContaining(typeof(GameBoardComponent),
             typeof(FoodComponent), typeof(WallComponent),
             typeof(EnemyComponent), typeof(ExitComponent));
 
@@ -66,17 +65,17 @@ public class Application : EcsRxApplication
             .First()
             .Subscribe(x => levelComponent.HasLoaded.Value = true);
             
-        defaultPool.CreateEntity(new GameBoardBlueprint());
+        defaultCollection.CreateEntity(new GameBoardBlueprint());
 
         for (var i = 0; i < levelComponent.FoodCount; i++)
-        { defaultPool.CreateEntity(new FoodBlueprint()); }
+        { defaultCollection.CreateEntity(new FoodBlueprint()); }
 
         for (var i = 0; i < levelComponent.WallCount; i++)
-        { defaultPool.CreateEntity(new WallBlueprint()); }
+        { defaultCollection.CreateEntity(new WallBlueprint()); }
 
         for (var i = 0; i < levelComponent.EnemyCount; i++)
-        { defaultPool.CreateEntity(new EnemyBlueprint()); }
+        { defaultCollection.CreateEntity(new EnemyBlueprint()); }
 
-        defaultPool.CreateEntity(new ExitBlueprint());
+        defaultCollection.CreateEntity(new ExitBlueprint());
     }
 }

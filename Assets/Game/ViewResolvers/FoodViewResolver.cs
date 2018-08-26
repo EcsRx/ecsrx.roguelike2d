@@ -2,32 +2,33 @@
 using Assets.Game.Components;
 using Assets.Game.SceneCollections;
 using EcsRx.Attributes;
+using EcsRx.Collections;
 using EcsRx.Entities;
 using EcsRx.Events;
+using EcsRx.Extensions;
 using EcsRx.Groups;
 using EcsRx.Pools;
 using EcsRx.Unity.Components;
 using EcsRx.Unity.Systems;
+using EcsRx.Views.Components;
+using EcsRx.Views.ViewHandlers;
 using UnityEngine;
 using Zenject;
 
 namespace Assets.Game.ViewResolvers
 {
     [Priority(2)]
-    public class FoodViewResolver : ViewResolverSystem
+    public class FoodViewResolver : PrefabViewResolverSystem
     {
-        private readonly IGroup _targetGroup = new Group(typeof(FoodComponent), typeof(ViewComponent));
         private readonly FoodTiles _foodTiles;
 
-        public override IGroup TargetGroup
-        {
-            get { return _targetGroup; }
-        }
+        public IGroup Group { get; } = new Group(typeof(FoodComponent), typeof(ViewComponent));
 
-        public FoodViewResolver(IViewHandler viewHandler, FoodTiles foodTiles) : base(viewHandler)
+        public FoodViewResolver(IEntityCollectionManager collectionManager, IEventSystem eventSystem, IInstantiator instantiator, FoodTiles foodTiles) : base(collectionManager, eventSystem, instantiator)
         {
             _foodTiles = foodTiles;
         }
+
 
         public override GameObject ResolveView(IEntity entity)
         {
@@ -37,6 +38,13 @@ namespace Assets.Game.ViewResolvers
             var gameObject = Object.Instantiate(tileChoice, Vector3.zero, Quaternion.identity) as GameObject;
             gameObject.name = string.Format("food-{0}", entity.Id);
             return gameObject;
+        }
+
+        protected override GameObject PrefabTemplate { get; }
+        
+        protected override void OnViewCreated(IEntity entity, GameObject view)
+        {
+            throw new System.NotImplementedException();
         }
     }
 }

@@ -1,12 +1,15 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using Assets.Game.Components;
 using Assets.Game.Events;
+using EcsRx.Collections;
 using EcsRx.Entities;
 using EcsRx.Events;
+using EcsRx.Extensions;
 using EcsRx.Groups;
-using EcsRx.Pools;
+using EcsRx.Groups.Observable;
 using EcsRx.Systems;
-using EcsRx.Unity.Components;
+using EcsRx.Views.Components;
 using UniRx;
 using UnityEngine;
 
@@ -15,16 +18,15 @@ namespace Assets.Game.Systems
     public class EnemyMovementSystem : IReactToEntitySystem
     {
         private readonly IEventSystem _eventSystem;
-        private readonly IGroupAccessor _playerAccessor;
-        private readonly IGroup _targetGroup = new Group(typeof(MovementComponent), typeof(EnemyComponent));
+        private readonly IObservableGroup _playerObservableGroup;
 
-        public IGroup TargetGroup { get { return _targetGroup; } }
+        public IGroup Group { get; } = new Group(typeof(MovementComponent), typeof(EnemyComponent));
 
 
-        public EnemyMovementSystem(IEventSystem eventSystem, IPoolManager poolManager)
+        public EnemyMovementSystem(IEventSystem eventSystem, IEntityCollectionManager collectionManager)
         {
             _eventSystem = eventSystem;
-            _playerAccessor = poolManager.CreateGroupAccessor(new Group(typeof (PlayerComponent)));
+            _playerObservableGroup = collectionManager.GetObservableGroup(new Group(typeof (PlayerComponent)));
         }
 
         public IObservable<IEntity> ReactToEntity(IEntity entity)
@@ -32,7 +34,7 @@ namespace Assets.Game.Systems
             return _eventSystem.Receive<EnemyTurnEvent>().Where(x => x.Enemy == entity).Select(x => entity);
         }
 
-        public void Execute(IEntity entity)
+        public void Process(IEntity entity)
         {
             var movementComponent = entity.GetComponent<MovementComponent>();
             if(movementComponent.Movement.Value != Vector2.zero) { return; }
@@ -47,14 +49,18 @@ namespace Assets.Game.Systems
             enemyComponent.IsSkippingNextTurn = true;
 
             var playerLocation = GetPlayerLocation();
-            var entityLocation = entity.GetComponent<ViewComponent>().View.transform.position;
+            var viewComponent = entity.GetComponent<ViewComponent>();
+            var gameObject = viewComponent.View as GameObject;
+            var entityLocation = gameObject.transform.position;
             movementComponent.Movement.Value = CalculateMovement(entityLocation, playerLocation);
         }
 
         private Vector3 GetPlayerLocation()
         {
-            var player = _playerAccessor.Entities.First();
-            return player.GetComponent<ViewComponent>().View.transform.position;
+            var player = _playerObservableGroup.First();
+            var viewComponent = player.GetComponent<ViewComponent>();
+            var gameObject = viewComponent.View as GameObject;
+            return gameObject.transform.position;
         }
 
         private Vector2 CalculateMovement(Vector3 currentPosition, Vector3 playerPosition)
