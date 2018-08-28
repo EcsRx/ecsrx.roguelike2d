@@ -1,22 +1,13 @@
-﻿using System;
-using System.Linq;
-using Assets.Game.Components;
-using Assets.Game.Events;
-using EcsRx.Collections;
-using EcsRx.Entities;
-using EcsRx.Events;
+﻿using EcsRx.Events;
 using EcsRx.Extensions;
-using EcsRx.Groups;
-using EcsRx.Groups.Observable;
-using EcsRx.Systems;
 using EcsRx.Systems.Custom;
 using EcsRx.Unity.Extensions;
-using EcsRx.Views.Components;
+using Game.Components;
 using Game.Computeds;
-using UniRx;
+using Game.Events;
 using UnityEngine;
 
-namespace Assets.Game.Systems
+namespace Game.Systems
 {
     public class EnemyMovementSystem : EventReactionSystem<EnemyTurnEvent>
     {

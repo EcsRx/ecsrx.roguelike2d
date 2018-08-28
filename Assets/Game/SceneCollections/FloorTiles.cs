@@ -1,8 +1,7 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
-namespace Assets.Game.SceneCollections
+namespace Game.SceneCollections
 {
     public class FloorTiles
     {

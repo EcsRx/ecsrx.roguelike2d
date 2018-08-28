@@ -1,14 +1,14 @@
-﻿using Assets.Game.Components;
-using EcsRx.Collections;
+﻿using EcsRx.Collections;
 using EcsRx.Entities;
 using EcsRx.Events;
 using EcsRx.Groups;
 using EcsRx.Unity.Systems;
 using EcsRx.Views.Components;
+using Game.Components;
 using UnityEngine;
 using Zenject;
 
-namespace Assets.Game.ViewResolvers
+namespace Game.ViewResolvers
 {
     public class PlayerViewResolver : PrefabViewResolverSystem
     {

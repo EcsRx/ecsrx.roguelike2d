@@ -18,7 +18,7 @@ using Zenject;
 
 namespace EcsRx.Unity
 {
-    [DefaultExecutionOrder(-20000)]
+    [DefaultExecutionOrder(-1000)]
     public abstract class EcsRxApplicationBehaviour : MonoBehaviour, IEcsRxApplication
     {
         public IDependencyContainer DependencyContainer { get; private set; }

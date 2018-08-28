@@ -1,9 +1,9 @@
 ﻿using System;
-using Assets.Game.Components;
 using EcsRx.Groups;
 using EcsRx.Views.Components;
+using Game.Components;
 
-namespace Assets.Game.Groups
+namespace Game.Groups
 {
     public class RandomlyPlacedGroup : IGroup
     {

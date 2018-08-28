@@ -1,10 +1,10 @@
-﻿using Assets.Game.Components;
-using EcsRx.Blueprints;
+﻿using EcsRx.Blueprints;
 using EcsRx.Entities;
 using EcsRx.Views.Components;
+using Game.Components;
 using UnityEngine;
 
-namespace Assets.Game.Blueprints
+namespace Game.Blueprints
 {
     public class FoodBlueprint : IBlueprint
     {

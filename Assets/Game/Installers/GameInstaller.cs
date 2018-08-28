@@ -1,7 +1,7 @@
-﻿using Assets.Game.Configuration;
+﻿using Game.Configuration;
 using Zenject;
 
-namespace Assets.Game.Installers
+namespace Game.Installers
 {
     public class GameInstaller : MonoInstaller
     {

@@ -1,13 +1,13 @@
-﻿using Assets.Game.Components;
-using Assets.Game.Events;
-using EcsRx.Collections;
+﻿using EcsRx.Collections;
 using EcsRx.Events;
 using EcsRx.Extensions;
 using EcsRx.Systems.Custom;
 using EcsRx.Unity.Extensions;
+using Game.Components;
+using Game.Events;
 using UnityEngine;
 
-namespace Assets.Game.Systems
+namespace Game.Systems
 {
     public class WallHitSystem : EventReactionSystem<WallHitEvent>
     {

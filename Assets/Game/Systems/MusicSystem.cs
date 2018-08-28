@@ -1,18 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Assets.Game.Components;
-using Assets.Game.Events;
 using EcsRx.Events;
 using EcsRx.Extensions;
 using EcsRx.Groups;
 using EcsRx.Groups.Observable;
 using EcsRx.Systems;
 using EcsRx.Unity.Extensions;
+using Game.Components;
+using Game.Events;
 using UniRx;
 using UnityEngine;
 
-namespace Assets.Game.Systems
+namespace Game.Systems
 {
     public class MusicSystem : IManualSystem
     {

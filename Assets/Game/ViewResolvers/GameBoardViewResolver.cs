@@ -1,18 +1,18 @@
-﻿using Assets.Game.Components;
-using Assets.Game.Extensions;
-using Assets.Game.Groups;
-using Assets.Game.SceneCollections;
-using EcsRx.Attributes;
+﻿using EcsRx.Attributes;
 using EcsRx.Collections;
 using EcsRx.Entities;
 using EcsRx.Events;
 using EcsRx.Extensions;
 using EcsRx.Groups;
 using EcsRx.Unity.Systems;
+using Game.Components;
+using Game.Extensions;
+using Game.Groups;
+using Game.SceneCollections;
 using UnityEngine;
 using Zenject;
 
-namespace Assets.Game.ViewResolvers
+namespace Game.ViewResolvers
 {
     [Priority(1)]
     public class GameBoardViewResolver : DynamicViewResolverSystem

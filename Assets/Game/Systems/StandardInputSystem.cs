@@ -1,14 +1,14 @@
 ﻿using System;
-using Assets.Game.Components;
 using EcsRx.Entities;
 using EcsRx.Extensions;
 using EcsRx.Groups;
 using EcsRx.Groups.Observable;
 using EcsRx.Systems;
+using Game.Components;
 using UniRx;
 using UnityEngine;
 
-namespace Assets.Game.Systems
+namespace Game.Systems
 {
     public class StandardInputSystem : IReactToGroupSystem
     {

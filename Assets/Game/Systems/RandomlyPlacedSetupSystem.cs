@@ -1,7 +1,4 @@
 ﻿using System.Linq;
-using Assets.Game.Components;
-using Assets.Game.Extensions;
-using Assets.Game.Groups;
 using EcsRx.Attributes;
 using EcsRx.Collections;
 using EcsRx.Entities;
@@ -9,7 +6,11 @@ using EcsRx.Extensions;
 using EcsRx.Groups;
 using EcsRx.Systems;
 using EcsRx.Unity.Extensions;
-namespace Assets.Game.Systems
+using Game.Components;
+using Game.Extensions;
+using Game.Groups;
+
+namespace Game.Systems
 {
     [Priority(11)]
     public class RandomlyPlacedSetupSystem : ISetupSystem

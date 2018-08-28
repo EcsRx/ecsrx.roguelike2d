@@ -2,7 +2,7 @@
 using EcsRx.Components;
 using UnityEngine;
 
-namespace Assets.Game.Components
+namespace Game.Components
 {
     public class GameBoardComponent : IComponent
     {

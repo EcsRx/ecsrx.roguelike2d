@@ -1,17 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
-using Assets.Game.Events;
-using Assets.Game.Extensions;
-using Assets.Game.SceneCollections;
 using EcsRx.Events;
 using EcsRx.Extensions;
 using EcsRx.Groups;
 using EcsRx.Groups.Observable;
 using EcsRx.Systems;
+using Game.Events;
+using Game.Extensions;
+using Game.SceneCollections;
 using UniRx;
 using UnityEngine;
 
-namespace Assets.Game.Systems
+namespace Game.Systems
 {
     public class SoundEffectSystem : IManualSystem
     {

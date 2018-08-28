@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections;
-using Assets.Game.Components;
-using Assets.Game.Configuration;
-using Assets.Game.Events;
 using EcsRx.Entities;
 using EcsRx.Events;
 using EcsRx.Extensions;
@@ -11,10 +8,13 @@ using EcsRx.Systems;
 using EcsRx.Unity.Extensions;
 using EcsRx.Unity.MonoBehaviours;
 using EcsRx.Views.Components;
+using Game.Components;
+using Game.Configuration;
+using Game.Events;
 using UniRx;
 using UnityEngine;
 
-namespace Assets.Game.Systems
+namespace Game.Systems
 {
     public class MovementSystem : IReactToEntitySystem
     {

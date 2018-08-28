@@ -1,6 +1,6 @@
 ﻿using EcsRx.Components;
 
-namespace Assets.Game.Components
+namespace Game.Components
 {
     public class ExitComponent : IComponent
     {

@@ -1,9 +1,9 @@
-using Assets.Game.Components;
 using EcsRx.Unity.Extensions;
+using Game.Components;
 using Game.Computeds;
 using Zenject;
 
-namespace Assets.Game.Installers
+namespace Game.Installers
 {
     public class ComputedInstaller : MonoInstaller
     {

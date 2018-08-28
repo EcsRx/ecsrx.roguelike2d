@@ -1,7 +1,4 @@
 ﻿using System.Linq;
-using Assets.Game.Blueprints;
-using Assets.Game.Components;
-using Assets.Game.Events;
 using EcsRx.Entities;
 using EcsRx.Events;
 using EcsRx.Extensions;
@@ -9,9 +6,12 @@ using EcsRx.Groups;
 using EcsRx.Groups.Observable;
 using EcsRx.Systems.Custom;
 using EcsRx.Unity.Extensions;
+using Game.Blueprints;
+using Game.Components;
+using Game.Events;
 using UniRx;
 
-namespace Assets.Game.Systems
+namespace Game.Systems
 {
     public class ExitReachedSystem : EventReactionSystem<ExitReachedEvent>
     {

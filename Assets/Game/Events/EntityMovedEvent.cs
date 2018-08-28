@@ -1,4 +1,4 @@
-﻿namespace Assets.Game.Events
+﻿namespace Game.Events
 {
     public class EntityMovedEvent
     {

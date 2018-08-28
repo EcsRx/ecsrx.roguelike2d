@@ -1,6 +1,4 @@
-﻿using EcsRx.Entities;
-
-namespace Assets.Game.Events
+﻿namespace Game.Events
 {
     public class PlayerTurnEvent
     {

@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Linq;
-using Assets.Game.Components;
-using Assets.Game.Configuration;
-using Assets.Game.Events;
 using EcsRx.Collections;
 using EcsRx.Entities;
 using EcsRx.Events;
@@ -12,10 +9,13 @@ using EcsRx.Groups;
 using EcsRx.Groups.Observable;
 using EcsRx.Systems;
 using EcsRx.Unity.Extensions;
+using Game.Components;
+using Game.Configuration;
+using Game.Events;
 using UniRx;
 using UnityEngine;
 
-namespace Assets.Game.Systems
+namespace Game.Systems
 {
     public class TurnsSystem : IManualSystem
     {

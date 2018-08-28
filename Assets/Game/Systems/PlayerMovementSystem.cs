@@ -1,17 +1,16 @@
 ﻿using System;
-using Assets.Game.Components;
-using Assets.Game.Configuration;
-using Assets.Game.Events;
 using EcsRx.Entities;
 using EcsRx.Events;
 using EcsRx.Extensions;
 using EcsRx.Groups;
 using EcsRx.Groups.Observable;
 using EcsRx.Systems;
+using Game.Components;
+using Game.Events;
 using UniRx;
 using UnityEngine;
 
-namespace Assets.Game.Systems
+namespace Game.Systems
 {
     public class PlayerMovementSystem : IReactToGroupSystem
     {

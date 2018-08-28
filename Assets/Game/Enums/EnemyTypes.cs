@@ -1,4 +1,4 @@
-﻿namespace Assets.Game.Enums
+﻿namespace Game.Enums
 {
     public enum EnemyTypes
     {

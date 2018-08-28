@@ -1,7 +1,7 @@
-﻿using Assets.Game.SceneCollections;
+﻿using Game.SceneCollections;
 using Zenject;
 
-namespace Assets.Game.Installers
+namespace Game.Installers
 {
     public class SceneCollectionsInstaller : MonoInstaller
     {

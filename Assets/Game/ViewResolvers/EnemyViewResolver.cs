@@ -1,6 +1,4 @@
 ﻿using System.Linq;
-using Assets.Game.Components;
-using Assets.Game.SceneCollections;
 using EcsRx.Attributes;
 using EcsRx.Collections;
 using EcsRx.Entities;
@@ -9,10 +7,12 @@ using EcsRx.Extensions;
 using EcsRx.Groups;
 using EcsRx.Unity.Systems;
 using EcsRx.Views.Components;
+using Game.Components;
+using Game.SceneCollections;
 using UnityEngine;
 using Zenject;
 
-namespace Assets.Game.ViewResolvers
+namespace Game.ViewResolvers
 {
     [Priority(2)]
     public class EnemyViewResolver : DynamicViewResolverSystem

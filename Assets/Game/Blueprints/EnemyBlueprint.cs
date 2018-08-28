@@ -1,11 +1,11 @@
-﻿using Assets.Game.Components;
-using Assets.Game.Enums;
-using EcsRx.Blueprints;
+﻿using EcsRx.Blueprints;
 using EcsRx.Entities;
 using EcsRx.Views.Components;
+using Game.Components;
+using Game.Enums;
 using Random = UnityEngine.Random;
 
-namespace Assets.Game.Blueprints
+namespace Game.Blueprints
 {
     public class EnemyBlueprint : IBlueprint
     {

@@ -1,9 +1,9 @@
 ﻿using System;
-using Assets.Game.Enums;
 using EcsRx.Components;
+using Game.Enums;
 using UniRx;
 
-namespace Assets.Game.Components
+namespace Game.Components
 {
     public class EnemyComponent : IComponent, IDisposable
     {
