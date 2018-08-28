@@ -1,9 +1,12 @@
-﻿using Assets.Game.Components;
+﻿using System;
+using Assets.Game.Components;
 using Assets.Game.Configuration;
 using Assets.Game.Events;
 using EcsRx.Entities;
 using EcsRx.Events;
+using EcsRx.Extensions;
 using EcsRx.Groups;
+using EcsRx.Groups.Observable;
 using EcsRx.Systems;
 using UniRx;
 using UnityEngine;
@@ -12,22 +15,17 @@ namespace Assets.Game.Systems
 {
     public class PlayerMovementSystem : IReactToGroupSystem
     {
-        private readonly IGroup _targetGroup = new Group(typeof(MovementComponent), typeof(PlayerComponent));
-        public IGroup TargetGroup { get { return _targetGroup; } }
+        public IGroup Group { get; } = new Group(typeof(MovementComponent), typeof(PlayerComponent));
 
         private readonly IEventSystem _eventSystem;
 
-        public IObservable<IGroupAccessor> ReactToGroup(IGroupAccessor @group)
-        {
-            return _eventSystem.Receive<PlayerTurnEvent>().Select(x => @group);
-        }
+        public IObservable<IObservableGroup> ReactToGroup(IObservableGroup group)
+        { return _eventSystem.Receive<PlayerTurnEvent>().Select(x => group); }
 
         public PlayerMovementSystem(IEventSystem eventSystem)
-        {
-            _eventSystem = eventSystem;
-        }
+        { _eventSystem = eventSystem; }
 
-        public void Execute(IEntity entity)
+        public void Process(IEntity entity)
         {
             var movementComponent = entity.GetComponent<MovementComponent>();
 

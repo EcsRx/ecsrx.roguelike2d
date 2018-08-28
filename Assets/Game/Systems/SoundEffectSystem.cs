@@ -6,6 +6,7 @@ using Assets.Game.SceneCollections;
 using EcsRx.Events;
 using EcsRx.Extensions;
 using EcsRx.Groups;
+using EcsRx.Groups.Observable;
 using EcsRx.Systems;
 using UniRx;
 using UnityEngine;
@@ -14,7 +15,7 @@ namespace Assets.Game.Systems
 {
     public class SoundEffectSystem : IManualSystem
     {
-        public IGroup TargetGroup { get { return new EmptyGroup();} }
+        public IGroup Group { get; } = new EmptyGroup();
 
         private readonly AudioSource _soundEffectSource;
         private readonly EnemyAttackSounds _enemyAttackSounds;
@@ -44,7 +45,7 @@ namespace Assets.Game.Systems
             _soundEffectSource = soundEffectObject.GetComponent<AudioSource>();
         }
 
-        public void StartSystem(IGroupAccessor @group)
+        public void StartSystem(IObservableGroup group)
         {
             _eventSystem.Receive<FoodPickupEvent>().Subscribe(x => {
                 var clips = x.IsSoda ? _drinkSounds.AvailableClips : _foodSounds.AvailableClips;
@@ -78,9 +79,7 @@ namespace Assets.Game.Systems
             _soundEffectSource.PlayOneShot(audioSource);
         }
 
-        public void StopSystem(IGroupAccessor @group)
-        {
-            _subscriptions.DisposeAll();
-        }
+        public void StopSystem(IObservableGroup group)
+        { _subscriptions.DisposeAll(); }
     }
 }

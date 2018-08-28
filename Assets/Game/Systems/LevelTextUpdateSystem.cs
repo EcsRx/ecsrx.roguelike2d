@@ -6,7 +6,9 @@ using Assets.Game.Events;
 using EcsRx.Events;
 using EcsRx.Extensions;
 using EcsRx.Groups;
+using EcsRx.Groups.Observable;
 using EcsRx.Systems;
+using EcsRx.Unity.Extensions;
 using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
@@ -15,8 +17,7 @@ namespace Assets.Game.Systems
 {
     public class LevelTextUpdateSystem : IManualSystem
     {
-        private readonly IGroup _targetGroup = new Group(typeof(LevelComponent));
-        public IGroup TargetGroup { get { return _targetGroup; } }
+        public IGroup Group { get; } = new Group(typeof(LevelComponent));
 
         private Text _levelText;
         private LevelComponent _levelComponent;
@@ -28,12 +29,12 @@ namespace Assets.Game.Systems
             _eventSystem = eventSystem;
         }
 
-        public void StartSystem(IGroupAccessor @group)
+        public void StartSystem(IObservableGroup group)
         {
             this.WaitForScene()
                 .Subscribe(x =>
                 {
-                    var level = @group.Entities.First();
+                    var level = @group.First();
                     _levelComponent = level.GetComponent<LevelComponent>();
                     _levelText = GameObject.Find("LevelText").GetComponent<Text>();
                     SetupSubscriptions();
@@ -43,17 +44,15 @@ namespace Assets.Game.Systems
         private void SetupSubscriptions()
         {
             _levelComponent.Level.DistinctUntilChanged()
-                .Subscribe(levelNumber => _levelText.text = string.Format("Day {0}", levelNumber))
+                .Subscribe(levelNumber => _levelText.text = $"Day {levelNumber}")
                 .AddTo(_subscriptions);
 
             _eventSystem.Receive<PlayerKilledEvent>()
-                .Subscribe(eventData => _levelText.text = string.Format("After {0} days, you starved.", _levelComponent.Level.Value))
+                .Subscribe(eventData => _levelText.text = $"After {_levelComponent.Level.Value} days, you starved.")
                 .AddTo(_subscriptions);
         }
 
-        public void StopSystem(IGroupAccessor @group)
-        {
-            _subscriptions.DisposeAll();
-        }
+        public void StopSystem(IObservableGroup group)
+        { _subscriptions.DisposeAll(); }
     }
 }

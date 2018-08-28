@@ -3,10 +3,11 @@ using Assets.Game.Extensions;
 using Assets.Game.Groups;
 using Assets.Game.SceneCollections;
 using EcsRx.Attributes;
+using EcsRx.Collections;
 using EcsRx.Entities;
 using EcsRx.Events;
+using EcsRx.Extensions;
 using EcsRx.Groups;
-using EcsRx.Pools;
 using EcsRx.Unity.Systems;
 using UnityEngine;
 using Zenject;
@@ -14,31 +15,31 @@ using Zenject;
 namespace Assets.Game.ViewResolvers
 {
     [Priority(1)]
-    public class GameBoardViewResolver : ViewResolverSystem
+    public class GameBoardViewResolver : DynamicViewResolverSystem
     {
-        private readonly IGroup _targetGroup = new GameBoardGroup();
         private readonly FloorTiles _floorTiles;
         private readonly OuterWallTiles _outerWallTiles;
 
-        public override IGroup TargetGroup
-        {
-            get { return _targetGroup; }
-        }
-
-        public GameBoardViewResolver(IViewHandler viewHandler, FloorTiles floorTiles, OuterWallTiles wallTiles) : base(viewHandler)
+        public override IGroup Group { get; } = new GameBoardGroup();
+        
+        public GameBoardViewResolver(IEventSystem eventSystem, IEntityCollectionManager collectionManager, 
+            IInstantiator instantiator, FloorTiles floorTiles, OuterWallTiles outerWallTiles) 
+            : base(eventSystem, collectionManager, instantiator)
         {
             _floorTiles = floorTiles;
-            _outerWallTiles = wallTiles;
+            _outerWallTiles = outerWallTiles;
         }
-
-        public override GameObject ResolveView(IEntity entity)
+        
+        public override GameObject CreateView(IEntity entity)
         {
             var rootView = new GameObject("Board");
             var boardComponent = entity.GetComponent<GameBoardComponent>();
             CreateBoardTiles(rootView.transform, boardComponent.Width, boardComponent.Height);
-
             return rootView;
         }
+
+        public override void DestroyView(IEntity entity, GameObject view)
+        { GameObject.Destroy(view); }
 
         private void CreateBoardTiles(Transform parentContainer, int width, int height)
         {
@@ -52,8 +53,8 @@ namespace Assets.Game.ViewResolvers
                     if (x == -1 || x == width || y == -1 || y == height)
                     { tileToInstantiate = _outerWallTiles.AvailableTiles.TakeRandom(); }
 
-                    var instance = Object.Instantiate(tileToInstantiate, new Vector3(x, y, 0f), Quaternion.identity) as GameObject;
-                    instance.name = string.Format("game-tile-{0}", index);
+                    var instance = Object.Instantiate(tileToInstantiate, new Vector3(x, y, 0f), Quaternion.identity);
+                    instance.name = $"game-tile-{index}";
                     instance.transform.SetParent(parentContainer);
                     index++;
                 }

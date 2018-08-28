@@ -4,7 +4,7 @@ using EcsRx.Collections;
 using EcsRx.Events;
 using EcsRx.Extensions;
 using EcsRx.Systems.Custom;
-using EcsRx.Views.Components;
+using EcsRx.Unity.Extensions;
 using UnityEngine;
 
 namespace Assets.Game.Systems
@@ -21,16 +21,11 @@ namespace Assets.Game.Systems
             var enemyComponent = eventData.Enemy.GetComponent<EnemyComponent>();
             enemyComponent.Health.Value--;
 
-            var viewComponent = eventData.Player.GetComponent<ViewComponent>();
-            var gameObject = viewComponent.View as GameObject;
-            var animator = gameObject.GetComponent<Animator>();
+            var animator = eventData.Player.GetUnityComponent<Animator>();
             animator.SetTrigger("playerChop");
 
             if (enemyComponent.Health.Value <= 0)
-            {
-                var collection = _entityCollectionManager.GetCollectionFor(eventData.Enemy);
-                collection.RemoveEntity(eventData.Enemy.Id);
-            }
+            { _entityCollectionManager.RemoveEntity(eventData.Enemy); }
         }
     }
 }

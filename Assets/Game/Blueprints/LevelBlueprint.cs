@@ -22,7 +22,7 @@ namespace Assets.Game.Blueprints
         {
             var levelComponent = new LevelComponent();
             UpdateLevel(levelComponent, _level);
-            entity.AddComponent(levelComponent);
+            entity.AddComponents(levelComponent);
         }
 
         public void UpdateLevel(LevelComponent levelComponent, int level)

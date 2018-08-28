@@ -1,18 +1,18 @@
 ﻿using Assets.Game.Components;
 using Assets.Game.Events;
+using EcsRx.Collections;
 using EcsRx.Events;
 using EcsRx.Extensions;
-using EcsRx.Pools;
 using EcsRx.Systems.Custom;
 
 namespace Assets.Game.Systems
 {
     public class FoodPickupSystem : EventReactionSystem<FoodPickupEvent>
     {
-        private readonly IPoolManager _poolManager;
+        private readonly IEntityCollectionManager _entityCollectionManager;
 
-        public FoodPickupSystem(IEventSystem eventSystem, IPoolManager poolManager) : base(eventSystem)
-        { _poolManager = poolManager; }
+        public FoodPickupSystem(IEventSystem eventSystem, IEntityCollectionManager entityCollectionManager) : base(eventSystem)
+        { _entityCollectionManager = entityCollectionManager; }
 
         public override void EventTriggered(FoodPickupEvent eventData)
         {
@@ -20,7 +20,7 @@ namespace Assets.Game.Systems
             var foodComponent = eventData.Food.GetComponent<FoodComponent>();
 
             playerComponent.Food.Value += foodComponent.FoodAmount;
-            _poolManager.RemoveEntity(eventData.Food);
+            _entityCollectionManager.RemoveEntity(eventData.Food);
         }
     }
 }

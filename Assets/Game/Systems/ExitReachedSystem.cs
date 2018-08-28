@@ -6,23 +6,26 @@ using EcsRx.Entities;
 using EcsRx.Events;
 using EcsRx.Extensions;
 using EcsRx.Groups;
+using EcsRx.Groups.Observable;
 using EcsRx.Systems.Custom;
+using EcsRx.Unity.Extensions;
 using UniRx;
 
 namespace Assets.Game.Systems
 {
     public class ExitReachedSystem : EventReactionSystem<ExitReachedEvent>
     {
-        public override IGroup TargetGroup { get { return new Group(typeof(LevelComponent)); } }
         private IEntity _level;
+        
+        public override IGroup Group { get; } = new Group(typeof(LevelComponent));
 
         public ExitReachedSystem(IEventSystem eventSystem) : base(eventSystem)
         {}
 
-        public override void StartSystem(IGroupAccessor @group)
+        public override void StartSystem(IObservableGroup group)
         {
-            base.StartSystem(@group);
-            this.WaitForScene().Subscribe(x => _level = @group.Entities.First());
+            base.StartSystem(group);
+            this.WaitForScene().Subscribe(x => _level = group.First());
         }
 
         public override void EventTriggered(ExitReachedEvent eventData)

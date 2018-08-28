@@ -6,7 +6,9 @@ using Assets.Game.Events;
 using EcsRx.Events;
 using EcsRx.Extensions;
 using EcsRx.Groups;
+using EcsRx.Groups.Observable;
 using EcsRx.Systems;
+using EcsRx.Unity.Extensions;
 using UniRx;
 using UnityEngine;
 
@@ -14,23 +16,23 @@ namespace Assets.Game.Systems
 {
     public class LevelScreenVisibilitySystem : IManualSystem
     {
-        private readonly IGroup _targetGroup = new Group(typeof(LevelComponent));
-        public IGroup TargetGroup { get { return _targetGroup; } }
+        private IEventSystem _eventSystem;
+        
+        public IGroup Group { get; } = new Group(typeof(LevelComponent));
 
         private GameObject _levelImage;
         private LevelComponent _levelComponent;
-        private IEventSystem _eventSystem;
         private IList<IDisposable> _subscriptions = new List<IDisposable>();
 
         public LevelScreenVisibilitySystem(IEventSystem eventSystem)
         { _eventSystem = eventSystem; }
 
-        public void StartSystem(IGroupAccessor @group)
+        public void StartSystem(IObservableGroup group)
         {
             this.WaitForScene()
                 .Subscribe(x =>
                 {
-                    var level = @group.Entities.First();
+                    var level = group.First();
                     _levelComponent = level.GetComponent<LevelComponent>();
                     _levelImage = GameObject.Find("LevelImage");
                     SetupSubscriptions();
@@ -48,9 +50,7 @@ namespace Assets.Game.Systems
                 .AddTo(_subscriptions);
         }
 
-        public void StopSystem(IGroupAccessor @group)
-        {
-            _subscriptions.DisposeAll();
-        }
+        public void StopSystem(IObservableGroup group)
+        { _subscriptions.DisposeAll(); }
     }
 }

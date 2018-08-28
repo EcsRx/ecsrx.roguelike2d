@@ -7,7 +7,9 @@ using EcsRx.Entities;
 using EcsRx.Events;
 using EcsRx.Extensions;
 using EcsRx.Groups;
+using EcsRx.Groups.Observable;
 using EcsRx.Systems;
+using EcsRx.Unity.Extensions;
 using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
@@ -16,8 +18,7 @@ namespace Assets.Game.Systems
 {
     public class FoodTextUpdateSystem : IManualSystem
     {
-        private readonly IGroup _targetGroup = new Group(typeof(PlayerComponent));
-        public IGroup TargetGroup { get { return _targetGroup; } }
+        public IGroup Group { get; } = new Group(typeof(PlayerComponent));
 
         private readonly IEventSystem _eventSystem;
         private PlayerComponent _playerComponent;
@@ -27,11 +28,11 @@ namespace Assets.Game.Systems
         public FoodTextUpdateSystem(IEventSystem eventSystem)
         { _eventSystem = eventSystem; }
 
-        public void StartSystem(IGroupAccessor @group)
+        public void StartSystem(IObservableGroup group)
         {
             this.WaitForScene().Subscribe(x =>
             {
-                var player = @group.Entities.First();
+                var player = group.First();
                 _playerComponent = player.GetComponent<PlayerComponent>();
                 _foodText = GameObject.Find("FoodText").GetComponent<Text>();
 
@@ -42,14 +43,14 @@ namespace Assets.Game.Systems
         private void SetupSubscriptions()
         {
             _playerComponent.Food.DistinctUntilChanged()
-                .Subscribe(foodAmount => { _foodText.text = string.Format("Food: {0}", foodAmount); })
+                .Subscribe(foodAmount => { _foodText.text = $"Food: {foodAmount}"; })
                 .AddTo(_subscriptions);
 
             _eventSystem.Receive<FoodPickupEvent>()
                 .Subscribe(x =>
                 {
                     var foodPoints = x.Food.GetComponent<FoodComponent>().FoodAmount;
-                    _foodText.text = string.Format("+{0} Food: {1}", foodPoints, _playerComponent.Food.Value);
+                    _foodText.text = $"+{foodPoints} Food: {_playerComponent.Food.Value}";
                 })
                 .AddTo(_subscriptions);
 
@@ -57,14 +58,12 @@ namespace Assets.Game.Systems
                 .Subscribe(x =>
                 {
                     var attackScore = x.Enemy.GetComponent<EnemyComponent>().EnemyPower;
-                    _foodText.text = string.Format("-{0} Food: {1}", attackScore, _playerComponent.Food.Value);
+                    _foodText.text = $"-{attackScore} Food: {_playerComponent.Food.Value}";
                 })
                 .AddTo(_subscriptions);
         }
 
-        public void StopSystem(IGroupAccessor @group)
-        {
-            _subscriptions.DisposeAll();
-        }
+        public void StopSystem(IObservableGroup group)
+        { _subscriptions.DisposeAll(); }
     }
 }
