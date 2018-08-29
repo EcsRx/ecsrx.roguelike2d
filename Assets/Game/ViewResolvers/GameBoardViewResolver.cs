@@ -4,6 +4,7 @@ using EcsRx.Entities;
 using EcsRx.Events;
 using EcsRx.Extensions;
 using EcsRx.Groups;
+using EcsRx.Unity.Dependencies;
 using EcsRx.Unity.Systems;
 using Game.Components;
 using Game.Extensions;
@@ -23,7 +24,7 @@ namespace Game.ViewResolvers
         public override IGroup Group { get; } = new GameBoardGroup();
         
         public GameBoardViewResolver(IEventSystem eventSystem, IEntityCollectionManager collectionManager, 
-            IInstantiator instantiator, FloorTiles floorTiles, OuterWallTiles outerWallTiles) 
+            IUnityInstantiator instantiator, FloorTiles floorTiles, OuterWallTiles outerWallTiles) 
             : base(eventSystem, collectionManager, instantiator)
         {
             _floorTiles = floorTiles;

@@ -4,12 +4,12 @@ using EcsRx.Events;
 using EcsRx.Extensions;
 using EcsRx.Groups;
 using EcsRx.Systems;
+using EcsRx.Unity.Dependencies;
 using EcsRx.Unity.MonoBehaviours;
 using EcsRx.Views.Components;
 using UniRx;
 using UniRx.Triggers;
 using UnityEngine;
-using Zenject;
 
 namespace EcsRx.Unity.Systems
 {
@@ -17,11 +17,11 @@ namespace EcsRx.Unity.Systems
     {
         public IEventSystem EventSystem { get; }
         public IEntityCollectionManager CollectionManager { get; }
-        public IInstantiator Instantiator { get; }
+        public IUnityInstantiator Instantiator { get; }
 
         public abstract IGroup Group { get; }
 
-        protected DynamicViewResolverSystem(IEventSystem eventSystem, IEntityCollectionManager collectionManager, IInstantiator instantiator)
+        protected DynamicViewResolverSystem(IEventSystem eventSystem, IEntityCollectionManager collectionManager, IUnityInstantiator instantiator)
         {
             EventSystem = eventSystem;
             CollectionManager = collectionManager;

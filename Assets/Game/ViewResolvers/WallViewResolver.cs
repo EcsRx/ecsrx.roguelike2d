@@ -3,6 +3,7 @@ using EcsRx.Collections;
 using EcsRx.Entities;
 using EcsRx.Events;
 using EcsRx.Groups;
+using EcsRx.Unity.Dependencies;
 using EcsRx.Unity.Systems;
 using EcsRx.Views.Components;
 using Game.Components;
@@ -20,7 +21,7 @@ namespace Game.ViewResolvers
         
         public override IGroup Group { get; } = new Group(typeof(WallComponent), typeof(ViewComponent));
 
-        public WallViewResolver(IEventSystem eventSystem, IEntityCollectionManager collectionManager, IInstantiator instantiator, WallTiles wallTiles) 
+        public WallViewResolver(IEventSystem eventSystem, IEntityCollectionManager collectionManager, IUnityInstantiator instantiator, WallTiles wallTiles) 
             : base(eventSystem, collectionManager, instantiator)
         {
             _wallTiles = wallTiles;

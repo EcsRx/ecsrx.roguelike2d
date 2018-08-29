@@ -1,4 +1,4 @@
-using EcsRx.Unity.Extensions;
+using EcsRx.Zenject.Extensions;
 using Game.Components;
 using Game.Computeds;
 using Zenject;

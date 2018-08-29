@@ -5,6 +5,7 @@ using EcsRx.Entities;
 using EcsRx.Events;
 using EcsRx.Extensions;
 using EcsRx.Groups;
+using EcsRx.Unity.Dependencies;
 using EcsRx.Unity.Systems;
 using EcsRx.Views.Components;
 using Game.Components;
@@ -21,7 +22,7 @@ namespace Game.ViewResolvers
 
         public override IGroup Group { get; } = new Group(typeof(EnemyComponent), typeof(ViewComponent));
        
-        public EnemyViewResolver(IEventSystem eventSystem, IEntityCollectionManager collectionManager, IInstantiator instantiator, EnemyTiles enemyTiles)
+        public EnemyViewResolver(IEventSystem eventSystem, IEntityCollectionManager collectionManager, IUnityInstantiator instantiator, EnemyTiles enemyTiles)
             : base(eventSystem, collectionManager, instantiator)
         {
             _enemyTiles = enemyTiles;

@@ -3,6 +3,7 @@ using EcsRx.Collections;
 using EcsRx.Entities;
 using EcsRx.Events;
 using EcsRx.Groups;
+using EcsRx.Unity.Dependencies;
 using EcsRx.Unity.Systems;
 using EcsRx.Views.Components;
 using Game.Components;
@@ -18,7 +19,7 @@ namespace Game.ViewResolvers
     {
         private readonly ExitTiles _exitTiles;
 
-        public ExitViewResolver(IEventSystem eventSystem, IEntityCollectionManager collectionManager, IInstantiator instantiator, ExitTiles exitTiles) 
+        public ExitViewResolver(IEventSystem eventSystem, IEntityCollectionManager collectionManager, IUnityInstantiator instantiator, ExitTiles exitTiles) 
             : base(eventSystem, collectionManager, instantiator)
         { _exitTiles = exitTiles; }
 
