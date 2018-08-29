@@ -18,7 +18,11 @@ namespace Game.Computeds
 
         public override Vector3 Transform(IObservableGroup observableGroup)
         {
-            var player = observableGroup.First();
+            var player = observableGroup.FirstOrDefault();
+            if(player == null)
+            { return Vector3.zero; }
+            
+            Debug.Log("Have Player");
             var gameObject = player.GetGameObject();
             return gameObject.transform.position;
         }
