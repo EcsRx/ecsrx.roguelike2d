@@ -1,10 +1,10 @@
-﻿using EcsRx.Collections;
+﻿using EcsRx.Unity.Dependencies;
+using EcsRx.Collections;
 using EcsRx.Entities;
 using EcsRx.Events;
 using EcsRx.Extensions;
 using EcsRx.Groups;
 using EcsRx.Systems;
-using EcsRx.Unity.Dependencies;
 using EcsRx.Unity.MonoBehaviours;
 using EcsRx.Views.Components;
 using UniRx;

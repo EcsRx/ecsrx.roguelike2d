@@ -12,7 +12,7 @@ using Game.Groups;
 
 namespace Game.Systems
 {
-    [Priority(11)]
+    [Priority(1)]
     public class RandomlyPlacedSetupSystem : ISetupSystem
     {
         private readonly IGroup _gameBoardGroup = new GameBoardGroup();

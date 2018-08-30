@@ -15,7 +15,7 @@ using Zenject;
 
 namespace Game.ViewResolvers
 {
-    [Priority(1)]
+    [Priority(100)]
     public class GameBoardViewResolver : DynamicViewResolverSystem
     {
         private readonly FloorTiles _floorTiles;

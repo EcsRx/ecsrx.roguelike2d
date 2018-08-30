@@ -14,7 +14,7 @@ using Zenject;
 
 namespace Game.ViewResolvers
 {
-    [Priority(2)]
+    [Priority(100)]
     public class ExitViewResolver : DynamicViewResolverSystem
     {
         private readonly ExitTiles _exitTiles;

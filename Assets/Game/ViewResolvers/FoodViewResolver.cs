@@ -15,7 +15,7 @@ using Zenject;
 
 namespace Game.ViewResolvers
 {
-    [Priority(2)]
+    [Priority(100)]
     public class FoodViewResolver : DynamicViewResolverSystem
     {
         private readonly FoodTiles _foodTiles;

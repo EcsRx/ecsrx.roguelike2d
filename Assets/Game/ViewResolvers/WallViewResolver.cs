@@ -14,7 +14,7 @@ using Zenject;
 
 namespace Game.ViewResolvers
 {
-    [Priority(2)]
+    [Priority(100)]
     public class WallViewResolver : DynamicViewResolverSystem
     {
         private readonly WallTiles _wallTiles;
