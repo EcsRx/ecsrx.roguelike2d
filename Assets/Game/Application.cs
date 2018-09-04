@@ -8,6 +8,7 @@ using Game.Blueprints;
 using Game.Components;
 using Game.Configuration;
 using Game.Events;
+using Game.Installers;
 using UniRx;
 using UnityEngine;
 using Zenject;
@@ -20,6 +21,14 @@ namespace Game
 
         [Inject]
         private GameConfiguration _gameConfiguration;
+
+        protected override void RegisterModules()
+        {
+            base.RegisterModules();
+            DependencyContainer.LoadModule<GameModule>();
+            DependencyContainer.LoadModule<SceneCollectionsModule>();
+            DependencyContainer.LoadModule<ComputedModule>();
+        }
 
         protected override void ApplicationStarting()
         {
