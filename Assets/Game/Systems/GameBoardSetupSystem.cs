@@ -1,21 +1,18 @@
-﻿using Assets.Game.Components;
-using Assets.Game.Groups;
-using EcsRx.Attributes;
+﻿using EcsRx.Attributes;
 using EcsRx.Entities;
+using EcsRx.Extensions;
 using EcsRx.Groups;
 using EcsRx.Systems;
+using Game.Components;
+using Game.Groups;
 using UnityEngine;
 
-namespace Assets.Game.Systems
+namespace Game.Systems
 {
     [Priority(10)]
     public class GameBoardSetupSystem : ISetupSystem
     {
-        private readonly IGroup _targetGroup = new GameBoardGroup();
-        public IGroup TargetGroup
-        {
-            get { return _targetGroup; }
-        }
+        public IGroup Group { get; } = new GameBoardGroup();
 
         public void Setup(IEntity entity)
         {

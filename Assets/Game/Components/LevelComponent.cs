@@ -2,7 +2,7 @@
 using EcsRx.Components;
 using UniRx;
 
-namespace Assets.Game.Components
+namespace Game.Components
 {
     public class LevelComponent : IComponent, IDisposable
     {

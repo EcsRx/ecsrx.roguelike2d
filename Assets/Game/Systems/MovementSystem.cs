@@ -1,26 +1,29 @@
-﻿using System.Collections;
-using Assets.Game.Components;
-using Assets.Game.Configuration;
-using Assets.Game.Events;
+﻿using System;
+using System.Collections;
 using EcsRx.Entities;
 using EcsRx.Events;
+using EcsRx.Extensions;
 using EcsRx.Groups;
 using EcsRx.Systems;
-using EcsRx.Unity.Components;
+using EcsRx.Unity.Extensions;
 using EcsRx.Unity.MonoBehaviours;
+using EcsRx.Views.Components;
+using Game.Components;
+using Game.Configuration;
+using Game.Events;
 using UniRx;
 using UnityEngine;
 
-namespace Assets.Game.Systems
+namespace Game.Systems
 {
     public class MovementSystem : IReactToEntitySystem
     {
         private readonly LayerMask _blockingLayer = LayerMask.GetMask("BlockingLayer");
-        private readonly IGroup _targetGroup = new Group(typeof(ViewComponent), typeof(MovementComponent));
+        
         private readonly GameConfiguration _gameConfiguration;
         private readonly IEventSystem _eventSystem;
         
-        public IGroup TargetGroup { get { return _targetGroup; } }
+        public IGroup Group { get; } = new Group(typeof(ViewComponent), typeof(MovementComponent)); 
 
         public MovementSystem(GameConfiguration gameConfiguration, IEventSystem eventSystem)
         {
@@ -34,14 +37,14 @@ namespace Assets.Game.Systems
             return movementComponent.Movement.DistinctUntilChanged().Where(x => x != Vector2.zero).Select(x => entity);
         }
 
-        public void Execute(IEntity entity)
+        public void Process(IEntity entity)
         {
-            var view = entity.GetComponent<ViewComponent>().View;
+            var viewGameObject = entity.GetGameObject();
             var movementComponent = entity.GetComponent<MovementComponent>();
 
-            Vector2 currentPosition = view.transform.position;
+            Vector2 currentPosition = viewGameObject.transform.position;
             var destination = currentPosition + movementComponent.Movement.Value;
-            var collidedObject = CheckForCollision(view, currentPosition, destination);
+            var collidedObject = CheckForCollision(viewGameObject, currentPosition, destination);
             var canMove = collidedObject == null;
 
             var isPlayer = entity.HasComponent<PlayerComponent>();
@@ -65,8 +68,8 @@ namespace Assets.Game.Systems
                 return;
             }
 
-            var rigidBody = view.GetComponent<Rigidbody2D>();
-            MainThreadDispatcher.StartUpdateMicroCoroutine(SmoothMovement(view, rigidBody, destination, movementComponent));
+            var rigidBody = viewGameObject.GetComponent<Rigidbody2D>();
+            MainThreadDispatcher.StartUpdateMicroCoroutine(SmoothMovement(viewGameObject, rigidBody, destination, movementComponent));
             _eventSystem.Publish(new EntityMovedEvent(isPlayer));
 
             if (isPlayer)

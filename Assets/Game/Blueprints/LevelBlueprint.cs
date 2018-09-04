@@ -1,9 +1,9 @@
-using Assets.Game.Components;
 using EcsRx.Blueprints;
 using EcsRx.Entities;
+using Game.Components;
 using UnityEngine;
 
-namespace Assets.Game.Blueprints
+namespace Game.Blueprints
 {
     public class LevelBlueprint : IBlueprint
     {
@@ -22,7 +22,7 @@ namespace Assets.Game.Blueprints
         {
             var levelComponent = new LevelComponent();
             UpdateLevel(levelComponent, _level);
-            entity.AddComponent(levelComponent);
+            entity.AddComponents(levelComponent);
         }
 
         public void UpdateLevel(LevelComponent levelComponent, int level)

@@ -1,21 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Assets.Game.Components;
-using Assets.Game.Events;
 using EcsRx.Events;
 using EcsRx.Extensions;
 using EcsRx.Groups;
+using EcsRx.Groups.Observable;
 using EcsRx.Systems;
+using EcsRx.Unity.Extensions;
+using Game.Components;
+using Game.Events;
 using UniRx;
 using UnityEngine;
 
-namespace Assets.Game.Systems
+namespace Game.Systems
 {
-    
     public class MusicSystem : IManualSystem
     {
-        public IGroup TargetGroup { get { return new Group(typeof(LevelComponent)); } }
+        public IGroup Group { get; } = new Group(typeof(LevelComponent));
 
         private readonly IEventSystem _eventSystem;
         private readonly AudioSource _musicSource;
@@ -29,12 +30,12 @@ namespace Assets.Game.Systems
             _eventSystem = eventSystem;
         }
 
-        public void StartSystem(IGroupAccessor @group)
+        public void StartSystem(IObservableGroup group)
         {
             this.WaitForScene()
                 .Subscribe(x =>
                 {
-                    var level = @group.Entities.First();
+                    var level = group.First();
                     _levelComponent = level.GetComponent<LevelComponent>();
                     SetupSubscriptions();
                 });
@@ -56,10 +57,8 @@ namespace Assets.Game.Systems
                 .AddTo(_subscriptions);
         }
 
-        public void StopSystem(IGroupAccessor @group)
-        {
-            _subscriptions.DisposeAll();
-        }
+        public void StopSystem(IObservableGroup group)
+        { _subscriptions.DisposeAll(); }
     }
     
 }

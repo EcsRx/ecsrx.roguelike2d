@@ -1,4 +1,4 @@
-﻿namespace Assets.Game.Configuration
+﻿namespace Game.Configuration
 {
     public class GameConfiguration
     {

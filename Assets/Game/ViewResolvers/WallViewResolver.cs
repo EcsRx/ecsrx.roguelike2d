@@ -1,40 +1,41 @@
-﻿using Assets.Game.Components;
-using Assets.Game.Extensions;
-using Assets.Game.SceneCollections;
-using EcsRx.Attributes;
+﻿using EcsRx.Attributes;
+using EcsRx.Collections;
 using EcsRx.Entities;
 using EcsRx.Events;
 using EcsRx.Groups;
-using EcsRx.Pools;
-using EcsRx.Unity.Components;
+using EcsRx.Unity.Dependencies;
 using EcsRx.Unity.Systems;
+using EcsRx.Views.Components;
+using Game.Components;
+using Game.Extensions;
+using Game.SceneCollections;
 using UnityEngine;
 using Zenject;
 
-namespace Assets.Game.ViewResolvers
+namespace Game.ViewResolvers
 {
-    [Priority(2)]
-    public class WallViewResolver : ViewResolverSystem
+    [Priority(100)]
+    public class WallViewResolver : DynamicViewResolverSystem
     {
-        private readonly IGroup _targetGroup = new Group(typeof(WallComponent), typeof(ViewComponent));
         private readonly WallTiles _wallTiles;
+        
+        public override IGroup Group { get; } = new Group(typeof(WallComponent), typeof(ViewComponent));
 
-        public override IGroup TargetGroup
-        {
-            get { return _targetGroup; }
-        }
-
-        public WallViewResolver(IViewHandler viewHandler, WallTiles wallTiles) : base(viewHandler)
+        public WallViewResolver(IEventSystem eventSystem, IEntityCollectionManager collectionManager, IUnityInstantiator instantiator, WallTiles wallTiles) 
+            : base(eventSystem, collectionManager, instantiator)
         {
             _wallTiles = wallTiles;
         }
 
-        public override GameObject ResolveView(IEntity entity)
+        public override GameObject CreateView(IEntity entity)
         {
             var tileChoice = _wallTiles.AvailableTiles.TakeRandom();
             var gameObject = Object.Instantiate(tileChoice, Vector3.zero, Quaternion.identity) as GameObject;
-            gameObject.name = string.Format("wall-{0}", entity.Id);
+            gameObject.name = $"wall-{entity.Id}";
             return gameObject;
         }
+
+        public override void DestroyView(IEntity entity, GameObject view)
+        { GameObject.Destroy(view); }
     }
 }

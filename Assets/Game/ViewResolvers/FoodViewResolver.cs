@@ -1,42 +1,44 @@
 ﻿using System.Linq;
-using Assets.Game.Components;
-using Assets.Game.SceneCollections;
 using EcsRx.Attributes;
+using EcsRx.Collections;
 using EcsRx.Entities;
 using EcsRx.Events;
+using EcsRx.Extensions;
 using EcsRx.Groups;
-using EcsRx.Pools;
-using EcsRx.Unity.Components;
+using EcsRx.Unity.Dependencies;
 using EcsRx.Unity.Systems;
+using EcsRx.Views.Components;
+using Game.Components;
+using Game.SceneCollections;
 using UnityEngine;
 using Zenject;
 
-namespace Assets.Game.ViewResolvers
+namespace Game.ViewResolvers
 {
-    [Priority(2)]
-    public class FoodViewResolver : ViewResolverSystem
+    [Priority(100)]
+    public class FoodViewResolver : DynamicViewResolverSystem
     {
-        private readonly IGroup _targetGroup = new Group(typeof(FoodComponent), typeof(ViewComponent));
         private readonly FoodTiles _foodTiles;
-
-        public override IGroup TargetGroup
-        {
-            get { return _targetGroup; }
-        }
-
-        public FoodViewResolver(IViewHandler viewHandler, FoodTiles foodTiles) : base(viewHandler)
+        
+        public override IGroup Group { get; } = new Group(typeof(FoodComponent), typeof(ViewComponent));
+        
+        public FoodViewResolver(IEventSystem eventSystem, IEntityCollectionManager collectionManager, IUnityInstantiator instantiator, FoodTiles foodTiles) 
+            : base(eventSystem, collectionManager, instantiator)
         {
             _foodTiles = foodTiles;
         }
-
-        public override GameObject ResolveView(IEntity entity)
+        
+        public override GameObject CreateView(IEntity entity)
         {
             var foodComponent = entity.GetComponent<FoodComponent>();
             var foodTileIndex = foodComponent.IsSoda ? 1 : 0;
             var tileChoice = _foodTiles.AvailableTiles.ElementAt(foodTileIndex);
-            var gameObject = Object.Instantiate(tileChoice, Vector3.zero, Quaternion.identity) as GameObject;
-            gameObject.name = string.Format("food-{0}", entity.Id);
+            var gameObject = Object.Instantiate(tileChoice, Vector3.zero, Quaternion.identity);
+            gameObject.name = $"food-{entity.Id}";
             return gameObject;
         }
+
+        public override void DestroyView(IEntity entity, GameObject view)
+        { GameObject.Destroy(view); }
     }
 }

@@ -1,32 +1,31 @@
-﻿using Assets.Game.Components;
+﻿using System;
 using EcsRx.Entities;
+using EcsRx.Extensions;
 using EcsRx.Groups;
+using EcsRx.Groups.Observable;
 using EcsRx.Systems;
+using Game.Components;
 using UniRx;
 using UnityEngine;
 
-namespace Assets.Game.Systems
+namespace Game.Systems
 {
     public class StandardInputSystem : IReactToGroupSystem
     {
-        private readonly IGroup _targetGroup = new Group(typeof(MovementComponent), typeof(StandardInputComponent));
-        public IGroup TargetGroup { get { return _targetGroup; } }
+        public IGroup Group { get; } = new Group(typeof(MovementComponent), typeof(StandardInputComponent));
 
-        public IObservable<IGroupAccessor> ReactToGroup(IGroupAccessor @group)
+        public IObservable<IObservableGroup> ReactToGroup(IObservableGroup group)
         {
-            return Observable.EveryUpdate().Select(x => @group);
+            return Observable.EveryUpdate().Select(x => group);
         }
 
-        public void Execute(IEntity entity)
+        public void Process(IEntity entity)
         {
             var movementComponent = entity.GetComponent<MovementComponent>();
             if(movementComponent.Movement.Value != Vector2.zero) { return; }
 
-            var horizontal = 0;
-            var vertical = 0;
-
-            horizontal = (int)(Input.GetAxisRaw("Horizontal"));
-            vertical = (int)(Input.GetAxisRaw("Vertical"));
+            var horizontal = (int)(Input.GetAxisRaw("Horizontal"));
+            var vertical = (int)(Input.GetAxisRaw("Vertical"));
             
             if (horizontal != 0)
             {

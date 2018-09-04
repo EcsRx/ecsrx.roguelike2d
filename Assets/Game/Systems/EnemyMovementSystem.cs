@@ -1,43 +1,30 @@
-﻿using System.Linq;
-using Assets.Game.Components;
-using Assets.Game.Events;
-using EcsRx.Entities;
-using EcsRx.Events;
-using EcsRx.Groups;
-using EcsRx.Pools;
-using EcsRx.Systems;
-using EcsRx.Unity.Components;
-using UniRx;
+﻿using EcsRx.Events;
+using EcsRx.Extensions;
+using EcsRx.Systems.Custom;
+using EcsRx.Unity.Extensions;
+using Game.Components;
+using Game.Computeds;
+using Game.Events;
 using UnityEngine;
 
-namespace Assets.Game.Systems
+namespace Game.Systems
 {
-    public class EnemyMovementSystem : IReactToEntitySystem
+    public class EnemyMovementSystem : EventReactionSystem<EnemyTurnEvent>
     {
-        private readonly IEventSystem _eventSystem;
-        private readonly IGroupAccessor _playerAccessor;
-        private readonly IGroup _targetGroup = new Group(typeof(MovementComponent), typeof(EnemyComponent));
+        private readonly IComputedPlayerPosition _computedPlayerPosition;
 
-        public IGroup TargetGroup { get { return _targetGroup; } }
-
-
-        public EnemyMovementSystem(IEventSystem eventSystem, IPoolManager poolManager)
+        public EnemyMovementSystem(IEventSystem eventSystem, IComputedPlayerPosition computedPlayerPosition) 
+            : base(eventSystem)
         {
-            _eventSystem = eventSystem;
-            _playerAccessor = poolManager.CreateGroupAccessor(new Group(typeof (PlayerComponent)));
+            _computedPlayerPosition = computedPlayerPosition;
         }
 
-        public IObservable<IEntity> ReactToEntity(IEntity entity)
+        public override void EventTriggered(EnemyTurnEvent eventData)
         {
-            return _eventSystem.Receive<EnemyTurnEvent>().Where(x => x.Enemy == entity).Select(x => entity);
-        }
-
-        public void Execute(IEntity entity)
-        {
-            var movementComponent = entity.GetComponent<MovementComponent>();
+            var movementComponent = eventData.Enemy.GetComponent<MovementComponent>();
             if(movementComponent.Movement.Value != Vector2.zero) { return; }
 
-            var enemyComponent = entity.GetComponent<EnemyComponent>();
+            var enemyComponent = eventData.Enemy.GetComponent<EnemyComponent>();
             if (enemyComponent.IsSkippingNextTurn)
             {
                 enemyComponent.IsSkippingNextTurn = false;
@@ -46,17 +33,13 @@ namespace Assets.Game.Systems
 
             enemyComponent.IsSkippingNextTurn = true;
 
-            var playerLocation = GetPlayerLocation();
-            var entityLocation = entity.GetComponent<ViewComponent>().View.transform.position;
+            var playerLocation = _computedPlayerPosition.Value;
+            
+            var gameObject = eventData.Enemy.GetGameObject();
+            var entityLocation = gameObject.transform.position;
             movementComponent.Movement.Value = CalculateMovement(entityLocation, playerLocation);
         }
-
-        private Vector3 GetPlayerLocation()
-        {
-            var player = _playerAccessor.Entities.First();
-            return player.GetComponent<ViewComponent>().View.transform.position;
-        }
-
+        
         private Vector2 CalculateMovement(Vector3 currentPosition, Vector3 playerPosition)
         {
             var x = 0.0f;

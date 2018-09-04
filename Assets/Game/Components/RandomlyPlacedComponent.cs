@@ -1,8 +1,7 @@
 ﻿using EcsRx.Components;
-using UniRx;
 using UnityEngine;
 
-namespace Assets.Game.Components
+namespace Game.Components
 {
     public class RandomlyPlacedComponent : IComponent
     {

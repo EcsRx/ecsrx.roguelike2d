@@ -1,23 +1,23 @@
-using Assets.Game.Components;
+using System;
 using EcsRx.Entities;
+using EcsRx.Extensions;
 using EcsRx.Groups;
+using EcsRx.Groups.Observable;
 using EcsRx.Systems;
+using Game.Components;
 using UniRx;
 using UnityEngine;
 
-namespace Assets.Game.Systems
+namespace Game.Systems
 {
     public class TouchInputSystem : IReactToGroupSystem
     {
-        private IGroup _targetGroup = new Group(typeof(MovementComponent), typeof(TouchInputComponent));
-        public IGroup TargetGroup { get { return _targetGroup; } }
+        public IGroup Group { get; } = new Group(typeof(MovementComponent), typeof(TouchInputComponent));
 
-        public IObservable<IGroupAccessor> ReactToGroup(IGroupAccessor @group)
-        {
-            return Observable.EveryUpdate().Select(x => @group);
-        }
+        public IObservable<IObservableGroup> ReactToGroup(IObservableGroup @group)
+        { return Observable.EveryUpdate().Select(x => group); }
 
-        public void Execute(IEntity entity)
+        public void Process(IEntity entity)
         {
             var touchComponent = entity.GetComponent<TouchInputComponent>();
 
@@ -28,7 +28,7 @@ namespace Assets.Game.Systems
             if (Input.touchCount > 0)
             {
                 //Store the first touch detected.
-                Touch myTouch = Input.touches[0];
+                var myTouch = Input.touches[0];
 				
                 //Check if the phase of that touch equals Began
                 if (myTouch.phase == TouchPhase.Began)
