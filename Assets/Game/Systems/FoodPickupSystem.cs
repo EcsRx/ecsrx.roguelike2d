@@ -1,12 +1,15 @@
-﻿using EcsRx.Collections;
+﻿using EcsRx.Attributes;
+using EcsRx.Collections;
 using EcsRx.Events;
 using EcsRx.Extensions;
 using EcsRx.Systems.Custom;
+using EcsRx.Unity.Extensions;
 using Game.Components;
 using Game.Events;
 
 namespace Game.Systems
 {
+    [Priority(-10)]
     public class FoodPickupSystem : EventReactionSystem<FoodPickupEvent>
     {
         private readonly IEntityCollectionManager _entityCollectionManager;
@@ -20,7 +23,8 @@ namespace Game.Systems
             var foodComponent = eventData.Food.GetComponent<FoodComponent>();
 
             playerComponent.Food.Value += foodComponent.FoodAmount;
-            _entityCollectionManager.RemoveEntity(eventData.Food);
+
+            this.AfterUpdateDo(x => { _entityCollectionManager.RemoveEntity(eventData.Food); });
         }
     }
 }

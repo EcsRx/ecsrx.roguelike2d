@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using EcsRx.Attributes;
 using EcsRx.Events;
 using EcsRx.Extensions;
 using EcsRx.Groups;
@@ -15,6 +16,7 @@ using UnityEngine.UI;
 
 namespace Game.Systems
 {
+    [Priority(10)]
     public class FoodTextUpdateSystem : IManualSystem
     {
         public IGroup Group { get; } = new Group(typeof(PlayerComponent));
@@ -48,7 +50,8 @@ namespace Game.Systems
             _eventSystem.Receive<FoodPickupEvent>()
                 .Subscribe(x =>
                 {
-                    var foodPoints = x.Food.GetComponent<FoodComponent>().FoodAmount;
+                    var foodComponent = x.Food.GetComponent<FoodComponent>();
+                    var foodPoints = foodComponent.FoodAmount;
                     _foodText.text = $"+{foodPoints} Food: {_playerComponent.Food.Value}";
                 })
                 .AddTo(_subscriptions);

@@ -74,9 +74,6 @@ namespace EcsRx.Zenject.Dependencies
                 var typePairs = configuration.WithTypedConstructorArgs.Select(x => new TypeValuePair(x.Key, x.Value));
                 binding.WithArgumentsExplicit(typePairs);
             }
-
-            _container.Bind<TFrom>().To<TTo>().AsSingle();
-
         }
 
         public void Bind<T>(BindingConfiguration configuration = null)
