@@ -7,12 +7,13 @@ using EcsRx.Groups;
 using EcsRx.Systems;
 using EcsRx.Unity.Extensions;
 using EcsRx.Unity.MonoBehaviours;
-using EcsRx.Views.Components;
+using EcsRx.Plugins.Views.Components;
 using Game.Components;
 using Game.Configuration;
 using Game.Events;
 using UniRx;
 using UnityEngine;
+using EcsRx.Plugins.ReactiveSystems.Systems;
 
 namespace Game.Systems
 {

@@ -2,7 +2,8 @@
 using EcsRx.Collections;
 using EcsRx.Extensions;
 using EcsRx.Unity.Extensions;
-using EcsRx.Views.Components;
+using EcsRx.Infrastructure.Extensions;
+using EcsRx.Plugins.Views.Components;
 using EcsRx.Zenject;
 using Game.Blueprints;
 using Game.Components;
@@ -21,24 +22,23 @@ namespace Game
 
         [Inject]
         private GameConfiguration _gameConfiguration;
-
-        protected override void RegisterModules()
+        protected override void LoadModules()
         {
-            base.RegisterModules();
-            DependencyContainer.LoadModule<GameModule>();
-            DependencyContainer.LoadModule<SceneCollectionsModule>();
-            DependencyContainer.LoadModule<ComputedModule>();
+            base.LoadModules();
+            Container.LoadModule<GameModule>();
+            Container.LoadModule<SceneCollectionsModule>();
+            Container.LoadModule<ComputedModule>();
         }
 
-        protected override void ApplicationStarting()
+        protected override void StartSystems()
         {
             this.BindAllSystemsWithinApplicationScope();
-            this.RegisterAllBoundSystems();
+            this.StartAllBoundSystems();
         }
 
         protected override void ApplicationStarted()
         {
-            defaultCollection = CollectionManager.GetCollection();
+            defaultCollection = EntityCollectionManager.GetCollection();
 
             var levelBlueprint = new LevelBlueprint();
             var levelEntity = defaultCollection.CreateEntity(levelBlueprint);

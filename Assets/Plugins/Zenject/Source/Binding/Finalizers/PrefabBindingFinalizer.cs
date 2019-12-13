@@ -7,6 +7,7 @@ using UnityEngine;
 
 namespace Zenject
 {
+    [NoReflectionBaking]
     public class PrefabBindingFinalizer : ProviderBindingFinalizer
     {
         readonly GameObjectCreationParameters _gameObjectBindInfo;
@@ -55,8 +56,10 @@ namespace Zenject
                                     container,
                                     _gameObjectBindInfo,
                                     concreteType,
+                                    concreteTypes,
                                     BindInfo.Arguments,
-                                    new PrefabProvider(_prefab))));
+                                    new PrefabProvider(_prefab),
+                                    BindInfo.InstantiatedCallback)));
                     break;
                 }
                 case ScopeTypes.Singleton:
@@ -74,8 +77,10 @@ namespace Zenject
                             container,
                             _gameObjectBindInfo,
                             argumentTarget,
+                            concreteTypes,
                             BindInfo.Arguments,
-                            new PrefabProvider(_prefab)));
+                            new PrefabProvider(_prefab),
+                            BindInfo.InstantiatedCallback));
 
                     RegisterProvidersForAllContractsPerConcreteType(
                         container,
@@ -108,8 +113,10 @@ namespace Zenject
                                     container,
                                     _gameObjectBindInfo,
                                     contractType,
+                                    BindInfo.ContractTypes,
                                     BindInfo.Arguments,
-                                    new PrefabProvider(_prefab))));
+                                    new PrefabProvider(_prefab),
+                                    BindInfo.InstantiatedCallback)));
                     break;
                 }
                 case ScopeTypes.Singleton:
@@ -127,8 +134,10 @@ namespace Zenject
                             container,
                             _gameObjectBindInfo,
                             argumentTarget,
+                            BindInfo.ContractTypes,
                             BindInfo.Arguments,
-                            new PrefabProvider(_prefab)));
+                            new PrefabProvider(_prefab),
+                            BindInfo.InstantiatedCallback));
 
                     RegisterProviderPerContract(
                         container,

@@ -1,4 +1,6 @@
 ﻿using EcsRx.Infrastructure.Dependencies;
+using EcsRx.Infrastructure.Extensions;
+
 using Game.Configuration;
 
 namespace Game.Installers

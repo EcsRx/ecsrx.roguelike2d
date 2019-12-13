@@ -9,11 +9,11 @@ namespace Zenject
     {
         [Inject]
         [NonSerialized]
-        Kernel _kernel = null;
+        Kernel _kernel;
 
         [Inject]
         [NonSerialized]
-        GuiRenderableManager _guiRenderableManager = null;
+        GuiRenderableManager _guiRenderableManager;
 
         [NonSerialized]
         DiContainer _container;
@@ -46,7 +46,7 @@ namespace Zenject
             get { return _container; }
         }
 
-        public void OnEnable()
+        public virtual void OnEnable()
         {
             if (_fatalError != null)
             {
@@ -56,11 +56,11 @@ namespace Zenject
             Initialize();
         }
 
-        void Initialize()
+        protected virtual void Initialize()
         {
             Assert.IsNull(_container);
 
-            _container = new DiContainer(new DiContainer[] { StaticContext.Container });
+            _container = new DiContainer(new[] { StaticContext.Container });
 
             // Make sure we don't create any game objects since editor windows don't have a scene
             _container.AssertOnNewGameObjects = true;
@@ -79,7 +79,7 @@ namespace Zenject
             _kernel.Initialize();
         }
 
-        public void OnDisable()
+        public virtual void OnDisable()
         {
             if (_fatalError != null)
             {
@@ -89,7 +89,7 @@ namespace Zenject
             _kernel.Dispose();
         }
 
-        public void Update()
+        public virtual void Update()
         {
             if (_fatalError != null)
             {
@@ -110,7 +110,7 @@ namespace Zenject
             Repaint();
         }
 
-        public void OnGUI()
+        public virtual void OnGUI()
         {
             if (_fatalError != null)
             {
@@ -145,7 +145,7 @@ namespace Zenject
             }
         }
 
-        void ExecuteFullReload()
+        protected virtual void ExecuteFullReload()
         {
             _kernel = null;
             _guiRenderableManager = null;

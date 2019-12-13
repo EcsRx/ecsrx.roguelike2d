@@ -5,26 +5,31 @@ using System.Collections.Generic;
 using System.Linq;
 using ModestTree;
 using UnityEngine;
+using Zenject.Internal;
 
 namespace Zenject
 {
+    [NoReflectionBaking]
     public abstract class AddToGameObjectComponentProviderBase : IProvider
     {
         readonly Type _componentType;
         readonly DiContainer _container;
         readonly List<TypeValuePair> _extraArguments;
         readonly object _concreteIdentifier;
+        readonly Action<InjectContext, object> _instantiateCallback;
 
         public AddToGameObjectComponentProviderBase(
             DiContainer container, Type componentType,
-            List<TypeValuePair> extraArguments, object concreteIdentifier)
+            IEnumerable<TypeValuePair> extraArguments, object concreteIdentifier,
+            Action<InjectContext, object> instantiateCallback)
         {
             Assert.That(componentType.DerivesFrom<Component>());
 
-            _extraArguments = extraArguments;
+            _extraArguments = extraArguments.ToList();
             _componentType = componentType;
             _container = container;
             _concreteIdentifier = concreteIdentifier;
+            _instantiateCallback = instantiateCallback;
         }
 
         public bool IsCached
@@ -57,8 +62,8 @@ namespace Zenject
             return _componentType;
         }
 
-        public List<object> GetAllInstancesWithInjectSplit(
-            InjectContext context, List<TypeValuePair> args, out Action injectAction)
+        public void GetAllInstancesWithInjectSplit(
+            InjectContext context, List<TypeValuePair> args, out Action injectAction, List<object> buffer)
         {
             Assert.IsNotNull(context);
 
@@ -79,10 +84,10 @@ namespace Zenject
             if (!_container.IsValidating || TypeAnalyzer.ShouldAllowDuringValidation(_componentType))
             {
                 if (_componentType == typeof(Transform))
-                // Treat transform as a special case because it's the one component that's always automatically added
-                // Otherwise, calling AddComponent below will fail and return null
-                // This is nice to allow doing things like
-                //      Container.Bind<Transform>().FromNewComponentOnNewGameObject();
+                    // Treat transform as a special case because it's the one component that's always automatically added
+                    // Otherwise, calling AddComponent below will fail and return null
+                    // This is nice to allow doing things like
+                    //      Container.Bind<Transform>().FromNewComponentOnNewGameObject();
                 {
                     instance = gameObj.transform;
                 }
@@ -102,14 +107,21 @@ namespace Zenject
             {
                 try
                 {
-                    var injectArgs = new InjectArgs()
-                    {
-                        ExtraArgs = _extraArguments.Concat(args).ToList(),
-                        Context = context,
-                        ConcreteIdentifier = _concreteIdentifier
-                    };
+                    var extraArgs = ZenPools.SpawnList<TypeValuePair>();
 
-                    _container.InjectExplicit(instance, _componentType, injectArgs);
+                    extraArgs.AllocFreeAddRange(_extraArguments);
+                    extraArgs.AllocFreeAddRange(args);
+
+                    _container.InjectExplicit(instance, _componentType, extraArgs, context, _concreteIdentifier);
+
+                    Assert.That(extraArgs.Count == 0);
+
+                    ZenPools.DespawnList(extraArgs);
+
+                    if (_instantiateCallback != null)
+                    {
+                        _instantiateCallback(context, instance);
+                    }
                 }
                 finally
                 {
@@ -119,7 +131,8 @@ namespace Zenject
                     }
                 }
             };
-            return new List<object>() { instance };
+
+            buffer.Add(instance);
         }
 
         protected abstract GameObject GetGameObject(InjectContext context);

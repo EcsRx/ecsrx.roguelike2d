@@ -1,6 +1,7 @@
 ﻿using EcsRx.Blueprints;
 using EcsRx.Entities;
-using EcsRx.Views.Components;
+using EcsRx.Extensions;
+using EcsRx.Plugins.Views.Components;
 using Game.Components;
 using Game.Enums;
 using Random = UnityEngine.Random;
@@ -21,7 +22,7 @@ namespace Game.Blueprints
             enemyComponent.Health.Value = 3;
             enemyComponent.EnemyType = GetRandomEnemyType();
             enemyComponent.EnemyPower = enemyComponent.EnemyType == EnemyTypes.Regular ? 10 : 20;
-            entity.AddComponents(enemyComponent, new ViewComponent(), 
+            entity.AddComponents(enemyComponent, new ViewComponent(),
                 new MovementComponent(), new RandomlyPlacedComponent());
         }
     }

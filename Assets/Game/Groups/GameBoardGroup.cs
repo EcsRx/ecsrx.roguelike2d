@@ -1,6 +1,6 @@
 ﻿using System;
 using EcsRx.Groups;
-using EcsRx.Views.Components;
+using EcsRx.Plugins.Views.Components;
 using Game.Components;
 
 namespace Game.Groups

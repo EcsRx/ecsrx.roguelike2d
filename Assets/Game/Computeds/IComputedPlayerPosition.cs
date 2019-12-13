@@ -1,4 +1,4 @@
-using EcsRx.Computed;
+using EcsRx.Plugins.Computeds;
 using UnityEngine;
 
 namespace Game.Computeds
