@@ -30,11 +30,11 @@ namespace Game
             Container.LoadModule<ComputedModule>();
         }
 
-        protected override void StartSystems()
-        {
-            this.BindAllSystemsWithinApplicationScope();
-            this.StartAllBoundSystems();
-        }
+        //protected override void StartSystems()
+        //{
+        //    this.BindAllSystemsWithinApplicationScope();
+        //    this.StartAllBoundSystems();
+        //}
 
         protected override void ApplicationStarted()
         {
