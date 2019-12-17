@@ -1,10 +1,9 @@
 #if !NOT_UNITY3D
 
 using System;
-using System.Collections;
-using UnityEngine.SceneManagement;
-using UnityEngine;
 using ModestTree;
+using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace Zenject
 {
@@ -18,7 +17,7 @@ namespace Zenject
         Child,
         // This will use the parent of the current scene as the parent for the next scene
         // In most cases this will be the same as None
-        Sibling,
+        Sibling
     }
 
     public class ZenjectSceneLoader
@@ -149,7 +148,7 @@ namespace Zenject
                 }
                 else
                 {
-                    SceneContext.ParentContainers = new DiContainer[] { _sceneContainer };
+                    SceneContext.ParentContainers = new[] { _sceneContainer };
                 }
             }
             else

@@ -5,27 +5,31 @@ using System.Collections.Generic;
 using System.Linq;
 using ModestTree;
 using UnityEngine;
-using Zenject;
+using Zenject.Internal;
 
 namespace Zenject
 {
+    [NoReflectionBaking]
     public class AddToCurrentGameObjectComponentProvider : IProvider
     {
         readonly Type _componentType;
         readonly DiContainer _container;
         readonly List<TypeValuePair> _extraArguments;
         readonly object _concreteIdentifier;
+        readonly Action<InjectContext, object> _instantiateCallback;
 
         public AddToCurrentGameObjectComponentProvider(
             DiContainer container, Type componentType,
-            List<TypeValuePair> extraArguments, object concreteIdentifier)
+            IEnumerable<TypeValuePair> extraArguments, object concreteIdentifier,
+            Action<InjectContext, object> instantiateCallback)
         {
             Assert.That(componentType.DerivesFrom<Component>());
 
-            _extraArguments = extraArguments;
+            _extraArguments = extraArguments.ToList();
             _componentType = componentType;
             _container = container;
             _concreteIdentifier = concreteIdentifier;
+            _instantiateCallback = instantiateCallback;
         }
 
         public bool IsCached
@@ -53,8 +57,8 @@ namespace Zenject
             return _componentType;
         }
 
-        public List<object> GetAllInstancesWithInjectSplit(
-            InjectContext context, List<TypeValuePair> args, out Action injectAction)
+        public void GetAllInstancesWithInjectSplit(
+            InjectContext context, List<TypeValuePair> args, out Action injectAction, List<object> buffer)
         {
             Assert.IsNotNull(context);
 
@@ -68,12 +72,17 @@ namespace Zenject
             {
                 var gameObj = ((Component)context.ObjectInstance).gameObject;
 
-                instance = gameObj.GetComponent(_componentType);
+                var componentInstance = gameObj.GetComponent(_componentType);
+                instance = componentInstance;
 
-                if (instance != null)
+                // Use componentInstance so that it triggers unity's overloaded comparison operator
+                // So if the component is there but missing then it returns null
+                // (https://github.com/svermeulen/Zenject/issues/582)
+                if (componentInstance != null)
                 {
                     injectAction = null;
-                    return new List<object>() { instance };
+                    buffer.Add(instance);
+                    return;
                 }
 
                 instance = gameObj.AddComponent(_componentType);
@@ -86,20 +95,25 @@ namespace Zenject
             // Note that we don't just use InstantiateComponentOnNewGameObjectExplicit here
             // because then circular references don't work
 
-            var injectArgs = new InjectArgs()
-            {
-                ExtraArgs = _extraArguments.Concat(args).ToList(),
-                Context = context,
-                ConcreteIdentifier = _concreteIdentifier
-            };
-
             injectAction = () =>
             {
-                _container.InjectExplicit(instance, _componentType, injectArgs);
-                Assert.That(injectArgs.ExtraArgs.IsEmpty());
+                var extraArgs = ZenPools.SpawnList<TypeValuePair>();
+
+                extraArgs.AllocFreeAddRange(_extraArguments);
+                extraArgs.AllocFreeAddRange(args);
+
+                _container.InjectExplicit(instance, _componentType, extraArgs, context, _concreteIdentifier);
+
+                Assert.That(extraArgs.IsEmpty());
+                ZenPools.DespawnList(extraArgs);
+
+                if (_instantiateCallback != null)
+                {
+                    _instantiateCallback(context, instance);
+                }
             };
 
-            return new List<object>() { instance };
+            buffer.Add(instance);
         }
     }
 }

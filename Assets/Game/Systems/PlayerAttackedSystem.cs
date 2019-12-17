@@ -1,6 +1,6 @@
 using EcsRx.Events;
 using EcsRx.Extensions;
-using EcsRx.Systems.Custom;
+using EcsRx.Plugins.ReactiveSystems.Custom;
 using EcsRx.Unity.Extensions;
 using Game.Components;
 using Game.Events;

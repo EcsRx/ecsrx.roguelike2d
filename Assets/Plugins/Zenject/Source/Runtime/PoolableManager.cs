@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
-using ModestTree;
-using Zenject;
 using System.Linq;
+using ModestTree;
+using ModestTree.Util;
 
 namespace Zenject
 {
@@ -16,13 +16,13 @@ namespace Zenject
             [InjectLocal]
             List<IPoolable> poolables,
             [Inject(Optional = true, Source = InjectSources.Local)]
-            List<ModestTree.Util.ValuePair<Type, int>> priorities)
+            List<ValuePair<Type, int>> priorities)
         {
             _poolables = poolables.Select(x => CreatePoolableInfo(x, priorities))
                 .OrderBy(x => x.Priority).Select(x => x.Poolable).ToList();
         }
 
-        PoolableInfo CreatePoolableInfo(IPoolable poolable, List<ModestTree.Util.ValuePair<Type, int>> priorities)
+        PoolableInfo CreatePoolableInfo(IPoolable poolable, List<ValuePair<Type, int>> priorities)
         {
             var match = priorities.Where(x => poolable.GetType().DerivesFromOrEqual(x.First)).Select(x => (int?)(x.Second)).SingleOrDefault();
             int priority = match.HasValue ? match.Value : 0;
@@ -37,6 +37,9 @@ namespace Zenject
 
             for (int i = 0; i < _poolables.Count; i++)
             {
+#if ZEN_INTERNAL_PROFILING
+                using (ProfileTimers.CreateTimedBlock("User Code"))
+#endif
 #if UNITY_EDITOR
                 using (ProfileBlock.Start("{0}.OnSpawned", _poolables[i].GetType()))
 #endif
@@ -54,6 +57,9 @@ namespace Zenject
             // Call OnDespawned in the reverse order just like how dispose works
             for (int i = _poolables.Count - 1; i >= 0; i--)
             {
+#if ZEN_INTERNAL_PROFILING
+                using (ProfileTimers.CreateTimedBlock("User Code"))
+#endif
 #if UNITY_EDITOR
                 using (ProfileBlock.Start("{0}.OnDespawned", _poolables[i].GetType()))
 #endif

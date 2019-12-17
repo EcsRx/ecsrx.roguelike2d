@@ -2,12 +2,13 @@
 
 using System;
 using System.Collections.Generic;
-using ModestTree;
 using System.Linq;
+using ModestTree;
 using Zenject.Internal;
 
 namespace Zenject
 {
+    [NoReflectionBaking]
     public class SubContainerCreatorByNewPrefabWithParams : ISubContainerCreator
     {
         readonly DiContainer _container;

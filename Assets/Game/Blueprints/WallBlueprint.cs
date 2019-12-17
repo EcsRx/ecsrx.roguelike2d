@@ -1,6 +1,7 @@
 ﻿using EcsRx.Blueprints;
 using EcsRx.Entities;
-using EcsRx.Views.Components;
+using EcsRx.Extensions;
+using EcsRx.Plugins.Views.Components;
 using Game.Components;
 
 namespace Game.Blueprints

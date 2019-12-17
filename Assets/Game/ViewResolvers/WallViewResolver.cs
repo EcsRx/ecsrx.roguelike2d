@@ -5,7 +5,7 @@ using EcsRx.Events;
 using EcsRx.Groups;
 using EcsRx.Unity.Dependencies;
 using EcsRx.Unity.Systems;
-using EcsRx.Views.Components;
+using EcsRx.Plugins.Views.Components;
 using Game.Components;
 using Game.Extensions;
 using Game.SceneCollections;

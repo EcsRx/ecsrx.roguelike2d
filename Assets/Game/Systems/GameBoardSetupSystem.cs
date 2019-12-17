@@ -2,6 +2,7 @@
 using EcsRx.Entities;
 using EcsRx.Extensions;
 using EcsRx.Groups;
+using EcsRx.Plugins.ReactiveSystems.Systems;
 using EcsRx.Systems;
 using Game.Components;
 using Game.Groups;

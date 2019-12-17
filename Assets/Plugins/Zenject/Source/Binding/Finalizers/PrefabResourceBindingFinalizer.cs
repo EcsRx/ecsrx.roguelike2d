@@ -3,10 +3,10 @@
 using System;
 using System.Collections.Generic;
 using ModestTree;
-using UnityEngine;
 
 namespace Zenject
 {
+    [NoReflectionBaking]
     public class PrefabResourceBindingFinalizer : ProviderBindingFinalizer
     {
         readonly GameObjectCreationParameters _gameObjectBindInfo;
@@ -55,8 +55,10 @@ namespace Zenject
                                     container,
                                     _gameObjectBindInfo,
                                     concreteType,
+                                    concreteTypes,
                                     BindInfo.Arguments,
-                                    new PrefabProviderResource(_resourcePath))));
+                                    new PrefabProviderResource(_resourcePath),
+                                    BindInfo.InstantiatedCallback)));
                     break;
                 }
                 case ScopeTypes.Singleton:
@@ -74,8 +76,10 @@ namespace Zenject
                             container,
                             _gameObjectBindInfo,
                             argumentTarget,
+                            concreteTypes,
                             BindInfo.Arguments,
-                            new PrefabProviderResource(_resourcePath)));
+                            new PrefabProviderResource(_resourcePath),
+                            BindInfo.InstantiatedCallback));
 
                     RegisterProvidersForAllContractsPerConcreteType(
                         container,
@@ -108,8 +112,10 @@ namespace Zenject
                                     container,
                                     _gameObjectBindInfo,
                                     contractType,
+                                    BindInfo.ContractTypes,
                                     BindInfo.Arguments,
-                                    new PrefabProviderResource(_resourcePath))));
+                                    new PrefabProviderResource(_resourcePath),
+                                    BindInfo.InstantiatedCallback)));
                     break;
                 }
                 case ScopeTypes.Singleton:
@@ -127,8 +133,10 @@ namespace Zenject
                             container,
                             _gameObjectBindInfo,
                             argumentTarget,
+                            BindInfo.ContractTypes,
                             BindInfo.Arguments,
-                            new PrefabProviderResource(_resourcePath)));
+                            new PrefabProviderResource(_resourcePath),
+                            BindInfo.InstantiatedCallback));
 
                     RegisterProviderPerContract(
                         container,

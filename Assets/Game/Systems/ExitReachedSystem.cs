@@ -4,7 +4,7 @@ using EcsRx.Events;
 using EcsRx.Extensions;
 using EcsRx.Groups;
 using EcsRx.Groups.Observable;
-using EcsRx.Systems.Custom;
+using EcsRx.Plugins.ReactiveSystems.Custom;
 using EcsRx.Unity.Extensions;
 using Game.Blueprints;
 using Game.Components;

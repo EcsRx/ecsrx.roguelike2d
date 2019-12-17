@@ -8,7 +8,7 @@ using EcsRx.Groups.Observable;
 using EcsRx.Systems;
 using EcsRx.Unity.Extensions;
 using EcsRx.Unity.MonoBehaviours;
-using EcsRx.Views.Components;
+using EcsRx.Plugins.Views.Components;
 using Game.Components;
 using Game.Events;
 using UniRx;

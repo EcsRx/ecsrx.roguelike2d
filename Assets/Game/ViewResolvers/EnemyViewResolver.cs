@@ -7,7 +7,7 @@ using EcsRx.Extensions;
 using EcsRx.Groups;
 using EcsRx.Unity.Dependencies;
 using EcsRx.Unity.Systems;
-using EcsRx.Views.Components;
+using EcsRx.Plugins.Views.Components;
 using Game.Components;
 using Game.SceneCollections;
 using UnityEngine;

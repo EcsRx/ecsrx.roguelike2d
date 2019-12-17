@@ -4,7 +4,7 @@ using EcsRx.Events;
 using EcsRx.Groups;
 using EcsRx.Unity.Dependencies;
 using EcsRx.Unity.Systems;
-using EcsRx.Views.Components;
+using EcsRx.Plugins.Views.Components;
 using Game.Components;
 using UnityEngine;
 using Zenject;
