@@ -1,4 +1,5 @@
 using EcsRx.Collections;
+using EcsRx.Collections.Database;
 using EcsRx.Events;
 using EcsRx.Extensions;
 using EcsRx.Plugins.ReactiveSystems.Custom;
@@ -11,10 +12,10 @@ namespace Game.Systems
 {
     public class EnemyAttackedSystem : EventReactionSystem<EnemyHitEvent>
     {
-        private readonly IEntityCollectionManager _entityCollectionManager;
+        private readonly IEntityDatabase _entityDatabase;
 
-        public EnemyAttackedSystem(IEventSystem eventSystem, IEntityCollectionManager entityCollectionManager) : base(eventSystem)
-        { _entityCollectionManager = entityCollectionManager; }
+        public EnemyAttackedSystem(IEventSystem eventSystem, IEntityDatabase entityDatabase) : base(eventSystem)
+        { _entityDatabase = entityDatabase; }
 
         public override void EventTriggered(EnemyHitEvent eventData)
         {
@@ -25,7 +26,7 @@ namespace Game.Systems
             animator.SetTrigger("playerChop");
 
             if (enemyComponent.Health.Value <= 0)
-            { _entityCollectionManager.RemoveEntity(eventData.Enemy); }
+            { _entityDatabase.RemoveEntity(eventData.Enemy); }
         }
     }
 }

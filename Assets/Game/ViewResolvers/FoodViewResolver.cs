@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using EcsRx.Attributes;
 using EcsRx.Collections;
+using EcsRx.Collections.Database;
 using EcsRx.Entities;
 using EcsRx.Events;
 using EcsRx.Extensions;
@@ -22,8 +23,8 @@ namespace Game.ViewResolvers
         
         public override IGroup Group { get; } = new Group(typeof(FoodComponent), typeof(ViewComponent));
         
-        public FoodViewResolver(IEventSystem eventSystem, IEntityCollectionManager collectionManager, IUnityInstantiator instantiator, FoodTiles foodTiles) 
-            : base(eventSystem, collectionManager, instantiator)
+        public FoodViewResolver(IEventSystem eventSystem, IEntityDatabase entityDatabase, IUnityInstantiator instantiator, FoodTiles foodTiles) 
+            : base(eventSystem, entityDatabase, instantiator)
         {
             _foodTiles = foodTiles;
         }

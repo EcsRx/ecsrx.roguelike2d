@@ -1,5 +1,6 @@
 ﻿using EcsRx.Attributes;
 using EcsRx.Collections;
+using EcsRx.Collections.Database;
 using EcsRx.Events;
 using EcsRx.Extensions;
 using EcsRx.Plugins.ReactiveSystems.Custom;
@@ -12,10 +13,10 @@ namespace Game.Systems
     [Priority(-10)]
     public class FoodPickupSystem : EventReactionSystem<FoodPickupEvent>
     {
-        private readonly IEntityCollectionManager _entityCollectionManager;
+        private readonly IEntityDatabase _entityDatabase;
 
-        public FoodPickupSystem(IEventSystem eventSystem, IEntityCollectionManager entityCollectionManager) : base(eventSystem)
-        { _entityCollectionManager = entityCollectionManager; }
+        public FoodPickupSystem(IEventSystem eventSystem, IEntityDatabase entityDatabase) : base(eventSystem)
+        { _entityDatabase = entityDatabase; }
 
         public override void EventTriggered(FoodPickupEvent eventData)
         {
@@ -24,7 +25,7 @@ namespace Game.Systems
 
             playerComponent.Food.Value += foodComponent.FoodAmount;
 
-            this.AfterUpdateDo(x => { _entityCollectionManager.RemoveEntity(eventData.Food); });
+            this.AfterUpdateDo(x => { _entityDatabase.RemoveEntity(eventData.Food); });
         }
     }
 }

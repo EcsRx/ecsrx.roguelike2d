@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using EcsRx.Attributes;
 using EcsRx.Collections;
+using EcsRx.Collections.Database;
 using EcsRx.Entities;
 using EcsRx.Extensions;
 using EcsRx.Groups;
@@ -17,16 +18,16 @@ namespace Game.Systems
     public class RandomlyPlacedSetupSystem : ISetupSystem
     {
         private readonly IGroup _gameBoardGroup = new GameBoardGroup();
-        public IEntityCollectionManager EntityCollectionManager { get; }
+        public IEntityDatabase EntityDatabase { get; }
         
         public IGroup Group { get; } = new RandomlyPlacedGroup();
         
-        public RandomlyPlacedSetupSystem(IEntityCollectionManager entityCollectionManager)
-        { EntityCollectionManager = entityCollectionManager; }
+        public RandomlyPlacedSetupSystem(IEntityDatabase entityDatabase)
+        { EntityDatabase = entityDatabase; }
 
         public void Setup(IEntity entity)
         {
-            var gameBoardEntity = EntityCollectionManager.GetEntitiesFor(_gameBoardGroup).First();
+            var gameBoardEntity = EntityDatabase.GetEntitiesFor(_gameBoardGroup).First();
             var gameBoardComponent = gameBoardEntity.GetComponent<GameBoardComponent>();
 
             var viewComponent = entity.GetGameObject();

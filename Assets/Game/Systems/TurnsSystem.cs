@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Linq;
 using EcsRx.Collections;
+using EcsRx.Collections.Database;
 using EcsRx.Entities;
 using EcsRx.Events;
 using EcsRx.Extensions;
@@ -29,12 +30,12 @@ namespace Game.Systems
 
         public IGroup Group { get; } = new Group(typeof(EnemyComponent));
 
-        public TurnsSystem(GameConfiguration gameConfiguration, IEventSystem eventSystem, IEntityCollectionManager entityCollectionManager)
+        public TurnsSystem(GameConfiguration gameConfiguration, IEventSystem eventSystem, IObservableGroupManager observableGroupManager)
         {
             _gameConfiguration = gameConfiguration;
             _eventSystem = eventSystem;
 
-            _levelAccessor = entityCollectionManager.GetObservableGroup(new Group(typeof (LevelComponent)));
+            _levelAccessor = observableGroupManager.GetObservableGroup(new Group(typeof (LevelComponent)));
         }
         
         private IEnumerator CarryOutTurns(IObservableGroup group)

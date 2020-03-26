@@ -1,5 +1,6 @@
 ﻿using EcsRx.Attributes;
 using EcsRx.Collections;
+using EcsRx.Collections.Database;
 using EcsRx.Entities;
 using EcsRx.Events;
 using EcsRx.Extensions;
@@ -23,9 +24,9 @@ namespace Game.ViewResolvers
 
         public override IGroup Group { get; } = new GameBoardGroup();
         
-        public GameBoardViewResolver(IEventSystem eventSystem, IEntityCollectionManager collectionManager, 
+        public GameBoardViewResolver(IEventSystem eventSystem, IEntityDatabase entityDatabase, 
             IUnityInstantiator instantiator, FloorTiles floorTiles, OuterWallTiles outerWallTiles) 
-            : base(eventSystem, collectionManager, instantiator)
+            : base(eventSystem, entityDatabase, instantiator)
         {
             _floorTiles = floorTiles;
             _outerWallTiles = outerWallTiles;

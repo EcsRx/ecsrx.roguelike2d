@@ -9,7 +9,7 @@ namespace Game.Installers
     {
         public void Setup(IDependencyContainer container)
         {
-            container.Bind<GameConfiguration>(new BindingConfiguration{AsSingleton = true});
+            container.Bind<GameConfiguration>(x => x.AsSingleton());
         }
     }
 }

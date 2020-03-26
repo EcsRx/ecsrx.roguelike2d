@@ -1,12 +1,12 @@
 ﻿using System;
 using EcsRx.Components;
-using EcsRx.Unity.EditorInputs;
-using EcsRx.Unity.Extensions;
-using EcsRx.Unity.Helpers;
+using EcsRx.UnityEditor.Editor.EditorInputs;
+using EcsRx.UnityEditor.Editor.Helpers;
+using EcsRx.UnityEditor.Extensions;
 using UnityEditor;
 using UnityEngine;
 
-namespace EcsRx.Unity.UIAspects
+namespace EcsRx.UnityEditor.Editor.UIAspects
 {
     public class ComponentUIAspect
     {
@@ -57,6 +57,7 @@ namespace EcsRx.Unity.UIAspects
                 if (handler == null)
                 {
                     Debug.LogWarning("This type is not supported: " + propertyType.Name + " - In component: " + component.GetType().Name);
+                    EditorGUILayout.EndHorizontal();
                     continue;
                 }
 

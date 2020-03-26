@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using EcsRx.Attributes;
 using EcsRx.Collections;
+using EcsRx.Collections.Database;
 using EcsRx.Entities;
 using EcsRx.Events;
 using EcsRx.Extensions;
@@ -22,8 +23,8 @@ namespace Game.ViewResolvers
 
         public override IGroup Group { get; } = new Group(typeof(EnemyComponent), typeof(ViewComponent));
        
-        public EnemyViewResolver(IEventSystem eventSystem, IEntityCollectionManager collectionManager, IUnityInstantiator instantiator, EnemyTiles enemyTiles)
-            : base(eventSystem, collectionManager, instantiator)
+        public EnemyViewResolver(IEventSystem eventSystem, IEntityDatabase entityDatabase, IUnityInstantiator instantiator, EnemyTiles enemyTiles)
+            : base(eventSystem, entityDatabase, instantiator)
         {
             _enemyTiles = enemyTiles;
         }

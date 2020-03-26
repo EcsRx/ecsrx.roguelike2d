@@ -1,4 +1,5 @@
 ﻿using EcsRx.Collections;
+using EcsRx.Collections.Database;
 using EcsRx.Entities;
 using EcsRx.Events;
 using EcsRx.Groups;
@@ -17,8 +18,8 @@ namespace Game.ViewResolvers
         
         protected override GameObject PrefabTemplate { get; } = Resources.Load<GameObject>("Prefabs/Player");
 
-        public PlayerViewResolver(IEntityCollectionManager collectionManager, IEventSystem eventSystem, IUnityInstantiator instantiator) 
-            : base(collectionManager, eventSystem, instantiator)
+        public PlayerViewResolver(IEntityDatabase entityDatabase, IEventSystem eventSystem, IUnityInstantiator instantiator) 
+            : base(entityDatabase, eventSystem, instantiator)
         {}
         
         protected override void OnViewCreated(IEntity entity, GameObject view)

@@ -1,5 +1,6 @@
 ﻿using System;
 using EcsRx.Collections;
+using EcsRx.Collections.Entity;
 using EcsRx.Extensions;
 using EcsRx.Unity.Extensions;
 using EcsRx.Infrastructure.Extensions;
@@ -22,6 +23,7 @@ namespace Game
 
         [Inject]
         private GameConfiguration _gameConfiguration;
+        
         protected override void LoadModules()
         {
             base.LoadModules();
@@ -30,15 +32,9 @@ namespace Game
             Container.LoadModule<ComputedModule>();
         }
 
-        //protected override void StartSystems()
-        //{
-        //    this.BindAllSystemsWithinApplicationScope();
-        //    this.StartAllBoundSystems();
-        //}
-
         protected override void ApplicationStarted()
         {
-            defaultCollection = EntityCollectionManager.GetCollection();
+            defaultCollection = EntityDatabase.GetCollection();
 
             var levelBlueprint = new LevelBlueprint();
             var levelEntity = defaultCollection.CreateEntity(levelBlueprint);

@@ -1,5 +1,6 @@
 ﻿using EcsRx.Attributes;
 using EcsRx.Collections;
+using EcsRx.Collections.Database;
 using EcsRx.Entities;
 using EcsRx.Events;
 using EcsRx.Groups;
@@ -19,8 +20,8 @@ namespace Game.ViewResolvers
     {
         private readonly ExitTiles _exitTiles;
 
-        public ExitViewResolver(IEventSystem eventSystem, IEntityCollectionManager collectionManager, IUnityInstantiator instantiator, ExitTiles exitTiles) 
-            : base(eventSystem, collectionManager, instantiator)
+        public ExitViewResolver(IEventSystem eventSystem, IEntityDatabase entityDatabase, IUnityInstantiator instantiator, ExitTiles exitTiles) 
+            : base(eventSystem, entityDatabase, instantiator)
         { _exitTiles = exitTiles; }
 
         public override IGroup Group { get; } = new Group(typeof(ExitComponent), typeof(ViewComponent));
