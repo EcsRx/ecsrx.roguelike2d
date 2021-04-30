@@ -1,8 +1,8 @@
-﻿using EcsRx.Infrastructure.Dependencies;
+﻿using SystemsRx.Infrastructure.Dependencies;
+using SystemsRx.Infrastructure.Extensions;
 using EcsRx.Infrastructure.Extensions;
 using Game.Components;
 using Game.Computeds;
-using Game.Configuration;
 
 namespace Game.Installers
 {

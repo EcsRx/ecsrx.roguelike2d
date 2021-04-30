@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using EcsRx.Attributes;
-using EcsRx.Events;
+using SystemsRx.Attributes;
+using SystemsRx.Events;
+using SystemsRx.Extensions;
+using SystemsRx.Systems.Conventional;
+using EcsRx.Collections;
 using EcsRx.Extensions;
 using EcsRx.Groups;
-using EcsRx.Groups.Observable;
 using EcsRx.Systems;
 using EcsRx.Unity.Extensions;
 using Game.Components;
@@ -17,23 +19,28 @@ using UnityEngine.UI;
 namespace Game.Systems
 {
     [Priority(10)]
-    public class FoodTextUpdateSystem : IManualSystem
+    public class FoodTextUpdateSystem : IManualSystem, IGroupSystem
     {
         public IGroup Group { get; } = new Group(typeof(PlayerComponent));
 
         private readonly IEventSystem _eventSystem;
+        private IObservableGroupManager _observableGroupManager;
+        
         private PlayerComponent _playerComponent;
         private Text _foodText;
         private readonly IList<IDisposable> _subscriptions = new List<IDisposable>();
 
-        public FoodTextUpdateSystem(IEventSystem eventSystem)
-        { _eventSystem = eventSystem; }
+        public FoodTextUpdateSystem(IEventSystem eventSystem, IObservableGroupManager observableGroupManager)
+        {
+            _eventSystem = eventSystem;
+            _observableGroupManager = observableGroupManager;
+        }
 
-        public void StartSystem(IObservableGroup group)
+        public void StartSystem()
         {
             this.WaitForScene().Subscribe(x =>
             {
-                var player = group.First();
+                var player = _observableGroupManager.GetObservableGroup(Group).First();
                 _playerComponent = player.GetComponent<PlayerComponent>();
                 _foodText = GameObject.Find("FoodText").GetComponent<Text>();
 
@@ -65,7 +72,7 @@ namespace Game.Systems
                 .AddTo(_subscriptions);
         }
 
-        public void StopSystem(IObservableGroup group)
+        public void StopSystem()
         { _subscriptions.DisposeAll(); }
     }
 }

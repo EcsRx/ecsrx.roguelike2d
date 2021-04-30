@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections;
 using System.Linq;
+using SystemsRx.Events;
+using SystemsRx.Systems.Conventional;
 using EcsRx.Collections;
-using EcsRx.Collections.Database;
 using EcsRx.Entities;
-using EcsRx.Events;
 using EcsRx.Extensions;
 using EcsRx.Groups;
 using EcsRx.Groups.Observable;
@@ -18,14 +18,14 @@ using UnityEngine;
 
 namespace Game.Systems
 {
-    public class TurnsSystem : IManualSystem
+    public class TurnsSystem : IManualSystem, IGroupSystem
     {
         private readonly GameConfiguration _gameConfiguration;
         private readonly IEventSystem _eventSystem;
 
         private IDisposable _updateSubscription;
         private bool _isProcessing;
-        private readonly IObservableGroup _levelAccessor;
+        private readonly IObservableGroup _levelAccessor, _enemyAccessor;
         private IEntity _level;
 
         public IGroup Group { get; } = new Group(typeof(EnemyComponent));
@@ -36,17 +36,18 @@ namespace Game.Systems
             _eventSystem = eventSystem;
 
             _levelAccessor = observableGroupManager.GetObservableGroup(new Group(typeof (LevelComponent)));
+            _enemyAccessor = observableGroupManager.GetObservableGroup(Group);
         }
         
-        private IEnumerator CarryOutTurns(IObservableGroup group)
+        private IEnumerator CarryOutTurns()
         {
             _isProcessing = true;
             yield return new WaitForSeconds(_gameConfiguration.TurnDelay);
 
-            if(!group.Any())
+            if(!_enemyAccessor.Any())
             { yield return new WaitForSeconds(_gameConfiguration.TurnDelay); }
 
-            foreach (var enemy in group)
+            foreach (var enemy in _enemyAccessor)
             {
                 _eventSystem.Publish(new EnemyTurnEvent(enemy));
                 yield return new WaitForSeconds(_gameConfiguration.MovementTime);
@@ -63,18 +64,18 @@ namespace Game.Systems
             return levelComponent != null && levelComponent.HasLoaded.Value;
         }
 
-        public void StartSystem(IObservableGroup group)
+        public void StartSystem()
         {
             this.WaitForScene().Subscribe(x => _level = _levelAccessor.First());
             
             _updateSubscription = Observable.EveryUpdate().Where(x => IsLevelLoaded())
                 .Subscribe(x => {
                     if (_isProcessing) { return; }
-                    MainThreadDispatcher.StartCoroutine(CarryOutTurns(@group));
+                    MainThreadDispatcher.StartCoroutine(CarryOutTurns());
                 });
         }
 
-        public void StopSystem(IObservableGroup group)
+        public void StopSystem()
         { _updateSubscription.Dispose(); }
     }
 }

@@ -1,6 +1,5 @@
-﻿using EcsRx.Events;
+﻿using SystemsRx.Systems.Conventional;
 using EcsRx.Extensions;
-using EcsRx.Plugins.ReactiveSystems.Custom;
 using EcsRx.Unity.Extensions;
 using Game.Components;
 using Game.Computeds;
@@ -9,17 +8,16 @@ using UnityEngine;
 
 namespace Game.Systems
 {
-    public class EnemyMovementSystem : EventReactionSystem<EnemyTurnEvent>
+    public class EnemyMovementSystem : IReactToEventSystem<EnemyTurnEvent>
     {
         private readonly IComputedPlayerPosition _computedPlayerPosition;
 
-        public EnemyMovementSystem(IEventSystem eventSystem, IComputedPlayerPosition computedPlayerPosition) 
-            : base(eventSystem)
+        public EnemyMovementSystem(IComputedPlayerPosition computedPlayerPosition)
         {
             _computedPlayerPosition = computedPlayerPosition;
         }
 
-        public override void EventTriggered(EnemyTurnEvent eventData)
+        public void Process(EnemyTurnEvent eventData)
         {
             var movementComponent = eventData.Enemy.GetComponent<MovementComponent>();
             if(movementComponent.Movement.Value != Vector2.zero) { return; }

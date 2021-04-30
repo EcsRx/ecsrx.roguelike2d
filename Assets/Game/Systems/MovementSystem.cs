@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections;
+using SystemsRx.Events;
 using EcsRx.Entities;
-using EcsRx.Events;
 using EcsRx.Extensions;
 using EcsRx.Groups;
-using EcsRx.Systems;
 using EcsRx.Unity.Extensions;
 using EcsRx.Unity.MonoBehaviours;
 using EcsRx.Plugins.Views.Components;

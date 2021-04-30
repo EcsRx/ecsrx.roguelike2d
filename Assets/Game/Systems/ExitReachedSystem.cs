@@ -1,10 +1,11 @@
 ﻿using System.Linq;
+using SystemsRx.Systems.Conventional;
+using EcsRx.Collections;
 using EcsRx.Entities;
-using EcsRx.Events;
 using EcsRx.Extensions;
 using EcsRx.Groups;
 using EcsRx.Groups.Observable;
-using EcsRx.Plugins.ReactiveSystems.Custom;
+using EcsRx.Systems;
 using EcsRx.Unity.Extensions;
 using Game.Blueprints;
 using Game.Components;
@@ -13,22 +14,25 @@ using UniRx;
 
 namespace Game.Systems
 {
-    public class ExitReachedSystem : EventReactionSystem<ExitReachedEvent>
+    public class ExitReachedSystem : IReactToEventSystem<ExitReachedEvent>, IManualSystem, IGroupSystem
     {
         private IEntity _level;
+        private IObservableGroup _observableGroup;
         
-        public override IGroup Group { get; } = new Group(typeof(LevelComponent));
+        public IGroup Group { get; } = new Group(typeof(LevelComponent));
 
-        public ExitReachedSystem(IEventSystem eventSystem) : base(eventSystem)
-        {}
-
-        public override void StartSystem(IObservableGroup group)
+        public ExitReachedSystem(IObservableGroupManager observableGroupManager)
         {
-            base.StartSystem(group);
-            this.WaitForScene().Subscribe(x => _level = group.First());
+            _observableGroup = observableGroupManager.GetObservableGroup(Group);
         }
 
-        public override void EventTriggered(ExitReachedEvent eventData)
+        public void StartSystem()
+        { this.WaitForScene().Subscribe(x => _level = _observableGroup.First()); }
+
+        public void StopSystem()
+        {}
+
+        public void Process(ExitReachedEvent eventData)
         {
             var movementComponent = eventData.Player.GetComponent<MovementComponent>();
             movementComponent.StopMovement = true;

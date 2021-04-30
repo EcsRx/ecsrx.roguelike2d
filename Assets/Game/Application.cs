@@ -1,9 +1,7 @@
 ﻿using System;
-using EcsRx.Collections;
+using SystemsRx.Infrastructure.Extensions;
 using EcsRx.Collections.Entity;
 using EcsRx.Extensions;
-using EcsRx.Unity.Extensions;
-using EcsRx.Infrastructure.Extensions;
 using EcsRx.Plugins.Views.Components;
 using EcsRx.Zenject;
 using Game.Blueprints;

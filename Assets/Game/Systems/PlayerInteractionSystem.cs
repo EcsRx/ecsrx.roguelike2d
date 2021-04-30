@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using SystemsRx.Events;
+using SystemsRx.Extensions;
+using SystemsRx.Systems.Conventional;
+using EcsRx.Collections;
 using EcsRx.Entities;
-using EcsRx.Events;
-using EcsRx.Extensions;
 using EcsRx.Groups;
-using EcsRx.Groups.Observable;
 using EcsRx.Systems;
 using EcsRx.Unity.Extensions;
 using EcsRx.Unity.MonoBehaviours;
@@ -16,29 +17,32 @@ using UniRx.Triggers;
 
 namespace Game.Systems
 {
-    public class PlayerInteractionSystem : IManualSystem
+    public class PlayerInteractionSystem : IManualSystem, IGroupSystem
     {
         public IGroup Group { get; } = new Group(typeof (PlayerComponent), typeof (ViewComponent));
         
         private readonly IList<IDisposable> _foodTriggers = new List<IDisposable>();
         private readonly IList<IDisposable> _exitTriggers = new List<IDisposable>();
         private readonly IEventSystem _eventSystem;
+        private readonly IObservableGroupManager _observableGroupManager;
 
-        public PlayerInteractionSystem(IEventSystem eventSystem)
+        public PlayerInteractionSystem(IEventSystem eventSystem, IObservableGroupManager observableGroupManager)
         {
             _eventSystem = eventSystem;
+            _observableGroupManager = observableGroupManager;
         }
 
-        public void StartSystem(IObservableGroup group)
+        public void StartSystem()
         {
             this.WaitForScene().Subscribe(x =>
             {
-                foreach(var player in group)
+                var observableGroup = _observableGroupManager.GetObservableGroup(Group);
+                foreach(var player in observableGroup)
                 { CheckForInteractions(player); }
             });
         }
 
-        public void StopSystem(IObservableGroup group)
+        public void StopSystem()
         {
             _foodTriggers.DisposeAll();
             _exitTriggers.DisposeAll();

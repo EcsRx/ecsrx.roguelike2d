@@ -1,16 +1,16 @@
-﻿using EcsRx.Attributes;
+﻿using SystemsRx.Attributes;
+using SystemsRx.Types;
 using EcsRx.Entities;
 using EcsRx.Extensions;
 using EcsRx.Groups;
 using EcsRx.Plugins.ReactiveSystems.Systems;
-using EcsRx.Systems;
 using Game.Components;
 using Game.Groups;
 using UnityEngine;
 
 namespace Game.Systems
 {
-    [Priority(10)]
+    [Priority(PriorityTypes.High)]
     public class GameBoardSetupSystem : ISetupSystem
     {
         public IGroup Group { get; } = new GameBoardGroup();

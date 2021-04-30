@@ -1,9 +1,9 @@
 ﻿using System.Linq;
-using EcsRx.Attributes;
-using EcsRx.Collections;
+using SystemsRx.Attributes;
+using SystemsRx.Events;
+using SystemsRx.Types;
 using EcsRx.Collections.Database;
 using EcsRx.Entities;
-using EcsRx.Events;
 using EcsRx.Extensions;
 using EcsRx.Groups;
 using EcsRx.Unity.Dependencies;
@@ -12,11 +12,10 @@ using EcsRx.Plugins.Views.Components;
 using Game.Components;
 using Game.SceneCollections;
 using UnityEngine;
-using Zenject;
 
 namespace Game.ViewResolvers
 {
-    [Priority(100)]
+    [Priority(PriorityTypes.Higher)]
     public class FoodViewResolver : DynamicViewResolverSystem
     {
         private readonly FoodTiles _foodTiles;

@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using EcsRx.Events;
+using SystemsRx.Extensions;
+using SystemsRx.Events;
+using SystemsRx.Systems.Conventional;
+using EcsRx.Collections;
 using EcsRx.Extensions;
 using EcsRx.Groups;
-using EcsRx.Groups.Observable;
 using EcsRx.Systems;
 using EcsRx.Unity.Extensions;
 using Game.Components;
@@ -15,26 +17,28 @@ using UnityEngine.UI;
 
 namespace Game.Systems
 {
-    public class LevelTextUpdateSystem : IManualSystem
+    public class LevelTextUpdateSystem : IManualSystem, IGroupSystem
     {
         public IGroup Group { get; } = new Group(typeof(LevelComponent));
 
         private Text _levelText;
         private LevelComponent _levelComponent;
         private readonly IEventSystem _eventSystem;
+        private readonly IObservableGroupManager _observableGroupManager;
         private readonly IList<IDisposable> _subscriptions = new List<IDisposable>();
 
-        public LevelTextUpdateSystem(IEventSystem eventSystem)
+        public LevelTextUpdateSystem(IEventSystem eventSystem, IObservableGroupManager observableGroupManager)
         {
             _eventSystem = eventSystem;
+            _observableGroupManager = observableGroupManager;
         }
 
-        public void StartSystem(IObservableGroup group)
+        public void StartSystem()
         {
             this.WaitForScene()
                 .Subscribe(x =>
                 {
-                    var level = @group.First();
+                    var level = _observableGroupManager.GetObservableGroup(Group).First();
                     _levelComponent = level.GetComponent<LevelComponent>();
                     _levelText = GameObject.Find("LevelText").GetComponent<Text>();
                     SetupSubscriptions();
@@ -52,7 +56,7 @@ namespace Game.Systems
                 .AddTo(_subscriptions);
         }
 
-        public void StopSystem(IObservableGroup group)
+        public void StopSystem()
         { _subscriptions.DisposeAll(); }
     }
 }

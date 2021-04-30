@@ -1,8 +1,7 @@
-﻿using EcsRx.Attributes;
-using EcsRx.Collections;
+﻿using SystemsRx.Attributes;
+using SystemsRx.Events;
 using EcsRx.Collections.Database;
 using EcsRx.Entities;
-using EcsRx.Events;
 using EcsRx.Groups;
 using EcsRx.Unity.Dependencies;
 using EcsRx.Unity.Systems;
@@ -11,7 +10,6 @@ using Game.Components;
 using Game.Extensions;
 using Game.SceneCollections;
 using UnityEngine;
-using Zenject;
 
 namespace Game.ViewResolvers
 {

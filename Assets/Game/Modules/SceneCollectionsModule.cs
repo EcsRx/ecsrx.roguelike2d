@@ -1,7 +1,6 @@
-﻿using EcsRx.Infrastructure.Dependencies;
-using EcsRx.Infrastructure.Extensions;
+﻿using SystemsRx.Infrastructure.Dependencies;
+using SystemsRx.Infrastructure.Extensions;
 using Game.SceneCollections;
-using Zenject;
 
 namespace Game.Installers
 {

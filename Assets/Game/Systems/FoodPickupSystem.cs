@@ -1,24 +1,23 @@
-﻿using EcsRx.Attributes;
-using EcsRx.Collections;
+﻿using SystemsRx.Attributes;
+using SystemsRx.Systems.Conventional;
+using SystemsRx.Types;
 using EcsRx.Collections.Database;
-using EcsRx.Events;
 using EcsRx.Extensions;
-using EcsRx.Plugins.ReactiveSystems.Custom;
 using EcsRx.Unity.Extensions;
 using Game.Components;
 using Game.Events;
 
 namespace Game.Systems
 {
-    [Priority(-10)]
-    public class FoodPickupSystem : EventReactionSystem<FoodPickupEvent>
+    [Priority(PriorityTypes.Low)]
+    public class FoodPickupSystem : IReactToEventSystem<FoodPickupEvent>
     {
         private readonly IEntityDatabase _entityDatabase;
 
-        public FoodPickupSystem(IEventSystem eventSystem, IEntityDatabase entityDatabase) : base(eventSystem)
+        public FoodPickupSystem(IEntityDatabase entityDatabase)
         { _entityDatabase = entityDatabase; }
 
-        public override void EventTriggered(FoodPickupEvent eventData)
+        public void Process(FoodPickupEvent eventData)
         {
             var playerComponent = eventData.Player.GetComponent<PlayerComponent>();
             var foodComponent = eventData.Food.GetComponent<FoodComponent>();

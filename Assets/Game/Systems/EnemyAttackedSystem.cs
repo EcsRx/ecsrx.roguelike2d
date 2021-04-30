@@ -1,8 +1,6 @@
-using EcsRx.Collections;
+using SystemsRx.Systems.Conventional;
 using EcsRx.Collections.Database;
-using EcsRx.Events;
 using EcsRx.Extensions;
-using EcsRx.Plugins.ReactiveSystems.Custom;
 using EcsRx.Unity.Extensions;
 using Game.Components;
 using Game.Events;
@@ -10,14 +8,14 @@ using UnityEngine;
 
 namespace Game.Systems
 {
-    public class EnemyAttackedSystem : EventReactionSystem<EnemyHitEvent>
+    public class EnemyAttackedSystem : IReactToEventSystem<EnemyHitEvent>
     {
         private readonly IEntityDatabase _entityDatabase;
 
-        public EnemyAttackedSystem(IEventSystem eventSystem, IEntityDatabase entityDatabase) : base(eventSystem)
+        public EnemyAttackedSystem(IEntityDatabase entityDatabase)
         { _entityDatabase = entityDatabase; }
 
-        public override void EventTriggered(EnemyHitEvent eventData)
+        public void Process(EnemyHitEvent eventData)
         {
             var enemyComponent = eventData.Enemy.GetComponent<EnemyComponent>();
             enemyComponent.Health.Value--;
