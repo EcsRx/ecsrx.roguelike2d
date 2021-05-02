@@ -5,6 +5,7 @@ using EcsRx.Entities;
 using EcsRx.Extensions;
 using EcsRx.Groups;
 using EcsRx.Groups.Observable;
+using EcsRx.Plugins.GroupBinding.Attributes;
 using EcsRx.Systems;
 using EcsRx.Unity.Extensions;
 using Game.Blueprints;
@@ -16,18 +17,16 @@ namespace Game.Systems
 {
     public class ExitReachedSystem : IReactToEventSystem<ExitReachedEvent>, IManualSystem, IGroupSystem
     {
-        private IEntity _level;
-        private IObservableGroup _observableGroup;
-        
         public IGroup Group { get; } = new Group(typeof(LevelComponent));
 
-        public ExitReachedSystem(IObservableGroupManager observableGroupManager)
-        {
-            _observableGroup = observableGroupManager.GetObservableGroup(Group);
-        }
+        [FromGroup]
+        public IObservableGroup ObservableGroup;
+
+        private IEntity _level;
+        
 
         public void StartSystem()
-        { this.WaitForScene().Subscribe(x => _level = _observableGroup.First()); }
+        { this.WaitForScene().Subscribe(x => _level = ObservableGroup.First()); }
 
         public void StopSystem()
         {}

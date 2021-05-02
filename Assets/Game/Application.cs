@@ -2,6 +2,7 @@
 using SystemsRx.Infrastructure.Extensions;
 using EcsRx.Collections.Entity;
 using EcsRx.Extensions;
+using EcsRx.Plugins.GroupBinding;
 using EcsRx.Plugins.Views.Components;
 using EcsRx.Zenject;
 using Game.Blueprints;
@@ -28,6 +29,12 @@ namespace Game
             Container.LoadModule<GameModule>();
             Container.LoadModule<SceneCollectionsModule>();
             Container.LoadModule<ComputedModule>();
+        }
+
+        protected override void LoadPlugins()
+        {
+            base.LoadPlugins();
+            RegisterPlugin(new GroupBindingsPlugin());
         }
 
         protected override void ApplicationStarted()

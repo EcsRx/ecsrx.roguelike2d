@@ -7,6 +7,8 @@ using SystemsRx.Systems.Conventional;
 using EcsRx.Collections;
 using EcsRx.Extensions;
 using EcsRx.Groups;
+using EcsRx.Groups.Observable;
+using EcsRx.Plugins.GroupBinding.Attributes;
 using EcsRx.Systems;
 using EcsRx.Unity.Extensions;
 using Game.Components;
@@ -21,16 +23,17 @@ namespace Game.Systems
     {
         public IGroup Group { get; } = new Group(typeof(LevelComponent));
 
+        [FromGroup]
+        public IObservableGroup ObservableGroup;
+        
         private Text _levelText;
         private LevelComponent _levelComponent;
         private readonly IEventSystem _eventSystem;
-        private readonly IObservableGroupManager _observableGroupManager;
         private readonly IList<IDisposable> _subscriptions = new List<IDisposable>();
 
-        public LevelTextUpdateSystem(IEventSystem eventSystem, IObservableGroupManager observableGroupManager)
+        public LevelTextUpdateSystem(IEventSystem eventSystem)
         {
             _eventSystem = eventSystem;
-            _observableGroupManager = observableGroupManager;
         }
 
         public void StartSystem()
@@ -38,7 +41,7 @@ namespace Game.Systems
             this.WaitForScene()
                 .Subscribe(x =>
                 {
-                    var level = _observableGroupManager.GetObservableGroup(Group).First();
+                    var level = ObservableGroup.First();
                     _levelComponent = level.GetComponent<LevelComponent>();
                     _levelText = GameObject.Find("LevelText").GetComponent<Text>();
                     SetupSubscriptions();

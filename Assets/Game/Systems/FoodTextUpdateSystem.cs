@@ -8,6 +8,8 @@ using SystemsRx.Systems.Conventional;
 using EcsRx.Collections;
 using EcsRx.Extensions;
 using EcsRx.Groups;
+using EcsRx.Groups.Observable;
+using EcsRx.Plugins.GroupBinding.Attributes;
 using EcsRx.Systems;
 using EcsRx.Unity.Extensions;
 using Game.Components;
@@ -23,27 +25,26 @@ namespace Game.Systems
     {
         public IGroup Group { get; } = new Group(typeof(PlayerComponent));
 
-        private readonly IEventSystem _eventSystem;
-        private IObservableGroupManager _observableGroupManager;
+        [FromGroup]
+        public IObservableGroup ObservableGroup;
         
+        private readonly IEventSystem _eventSystem;
         private PlayerComponent _playerComponent;
         private Text _foodText;
         private readonly IList<IDisposable> _subscriptions = new List<IDisposable>();
 
-        public FoodTextUpdateSystem(IEventSystem eventSystem, IObservableGroupManager observableGroupManager)
+        public FoodTextUpdateSystem(IEventSystem eventSystem)
         {
             _eventSystem = eventSystem;
-            _observableGroupManager = observableGroupManager;
         }
 
         public void StartSystem()
         {
             this.WaitForScene().Subscribe(x =>
             {
-                var player = _observableGroupManager.GetObservableGroup(Group).First();
+                var player = ObservableGroup.First();
                 _playerComponent = player.GetComponent<PlayerComponent>();
                 _foodText = GameObject.Find("FoodText").GetComponent<Text>();
-
                 SetupSubscriptions();
             });
         }

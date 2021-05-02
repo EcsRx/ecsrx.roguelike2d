@@ -8,6 +8,7 @@ using EcsRx.Entities;
 using EcsRx.Extensions;
 using EcsRx.Groups;
 using EcsRx.Groups.Observable;
+using EcsRx.Plugins.GroupBinding.Attributes;
 using EcsRx.Systems;
 using EcsRx.Unity.Extensions;
 using Game.Components;
@@ -18,25 +19,26 @@ using UnityEngine;
 
 namespace Game.Systems
 {
-    public class TurnsSystem : IManualSystem, IGroupSystem
+    public class TurnsSystem : IManualSystem
     {
         private readonly GameConfiguration _gameConfiguration;
         private readonly IEventSystem _eventSystem;
 
         private IDisposable _updateSubscription;
         private bool _isProcessing;
-        private readonly IObservableGroup _levelAccessor, _enemyAccessor;
+        
+        [FromComponents(typeof (LevelComponent))]
+        public IObservableGroup LevelAccessor;
+        
+        [FromComponents(typeof(EnemyComponent))]
+        public IObservableGroup EnemyAccessor;
+        
         private IEntity _level;
 
-        public IGroup Group { get; } = new Group(typeof(EnemyComponent));
-
-        public TurnsSystem(GameConfiguration gameConfiguration, IEventSystem eventSystem, IObservableGroupManager observableGroupManager)
+        public TurnsSystem(GameConfiguration gameConfiguration, IEventSystem eventSystem)
         {
             _gameConfiguration = gameConfiguration;
             _eventSystem = eventSystem;
-
-            _levelAccessor = observableGroupManager.GetObservableGroup(new Group(typeof (LevelComponent)));
-            _enemyAccessor = observableGroupManager.GetObservableGroup(Group);
         }
         
         private IEnumerator CarryOutTurns()
@@ -44,10 +46,10 @@ namespace Game.Systems
             _isProcessing = true;
             yield return new WaitForSeconds(_gameConfiguration.TurnDelay);
 
-            if(!_enemyAccessor.Any())
+            if(!EnemyAccessor.Any())
             { yield return new WaitForSeconds(_gameConfiguration.TurnDelay); }
 
-            foreach (var enemy in _enemyAccessor)
+            foreach (var enemy in EnemyAccessor)
             {
                 _eventSystem.Publish(new EnemyTurnEvent(enemy));
                 yield return new WaitForSeconds(_gameConfiguration.MovementTime);
@@ -66,7 +68,7 @@ namespace Game.Systems
 
         public void StartSystem()
         {
-            this.WaitForScene().Subscribe(x => _level = _levelAccessor.First());
+            this.WaitForScene().Subscribe(x => _level = LevelAccessor.First());
             
             _updateSubscription = Observable.EveryUpdate().Where(x => IsLevelLoaded())
                 .Subscribe(x => {

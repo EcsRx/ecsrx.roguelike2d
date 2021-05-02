@@ -6,6 +6,8 @@ using SystemsRx.Systems.Conventional;
 using EcsRx.Collections;
 using EcsRx.Entities;
 using EcsRx.Groups;
+using EcsRx.Groups.Observable;
+using EcsRx.Plugins.GroupBinding.Attributes;
 using EcsRx.Systems;
 using EcsRx.Unity.Extensions;
 using EcsRx.Unity.MonoBehaviours;
@@ -20,24 +22,24 @@ namespace Game.Systems
     public class PlayerInteractionSystem : IManualSystem, IGroupSystem
     {
         public IGroup Group { get; } = new Group(typeof (PlayerComponent), typeof (ViewComponent));
+
+        [FromGroup]
+        public IObservableGroup ObservableGroup;
         
         private readonly IList<IDisposable> _foodTriggers = new List<IDisposable>();
         private readonly IList<IDisposable> _exitTriggers = new List<IDisposable>();
         private readonly IEventSystem _eventSystem;
-        private readonly IObservableGroupManager _observableGroupManager;
 
-        public PlayerInteractionSystem(IEventSystem eventSystem, IObservableGroupManager observableGroupManager)
+        public PlayerInteractionSystem(IEventSystem eventSystem)
         {
             _eventSystem = eventSystem;
-            _observableGroupManager = observableGroupManager;
         }
 
         public void StartSystem()
         {
             this.WaitForScene().Subscribe(x =>
             {
-                var observableGroup = _observableGroupManager.GetObservableGroup(Group);
-                foreach(var player in observableGroup)
+                foreach(var player in ObservableGroup)
                 { CheckForInteractions(player); }
             });
         }

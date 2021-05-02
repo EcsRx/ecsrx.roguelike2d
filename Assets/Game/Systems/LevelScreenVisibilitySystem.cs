@@ -7,6 +7,8 @@ using SystemsRx.Extensions;
 using EcsRx.Collections;
 using EcsRx.Extensions;
 using EcsRx.Groups;
+using EcsRx.Groups.Observable;
+using EcsRx.Plugins.GroupBinding.Attributes;
 using EcsRx.Systems;
 using EcsRx.Unity.Extensions;
 using Game.Components;
@@ -18,19 +20,19 @@ namespace Game.Systems
 {
     public class LevelScreenVisibilitySystem : IManualSystem, IGroupSystem
     {
-        private IEventSystem _eventSystem;
-        private IObservableGroupManager _observableGroupManager;
-        
         public IGroup Group { get; } = new Group(typeof(LevelComponent));
-
+        
+        [FromGroup]
+        public IObservableGroup ObservableGroup;
+        
+        private IEventSystem _eventSystem;
         private GameObject _levelImage;
         private LevelComponent _levelComponent;
         private IList<IDisposable> _subscriptions = new List<IDisposable>();
 
-        public LevelScreenVisibilitySystem(IEventSystem eventSystem, IObservableGroupManager observableGroupManager)
+        public LevelScreenVisibilitySystem(IEventSystem eventSystem)
         {
             _eventSystem = eventSystem;
-            _observableGroupManager = observableGroupManager;
         }
 
         public void StartSystem()
@@ -38,7 +40,7 @@ namespace Game.Systems
             this.WaitForScene()
                 .Subscribe(x =>
                 {
-                    var level = _observableGroupManager.GetObservableGroup(Group).First();
+                    var level = ObservableGroup.First();
                     _levelComponent = level.GetComponent<LevelComponent>();
                     _levelImage = GameObject.Find("LevelImage");
                     SetupSubscriptions();

@@ -4,9 +4,10 @@ using System.Linq;
 using SystemsRx.Events;
 using SystemsRx.Systems.Conventional;
 using SystemsRx.Extensions;
-using EcsRx.Collections;
 using EcsRx.Extensions;
 using EcsRx.Groups;
+using EcsRx.Groups.Observable;
+using EcsRx.Plugins.GroupBinding.Attributes;
 using EcsRx.Systems;
 using EcsRx.Unity.Extensions;
 using Game.Components;
@@ -20,19 +21,19 @@ namespace Game.Systems
     {
         public IGroup Group { get; } = new Group(typeof(LevelComponent));
 
-        private readonly IEventSystem _eventSystem;
-        private readonly IObservableGroupManager _observableGroupManager;
+        [FromGroup]
+        public IObservableGroup ObservableGroup;
         
+        private readonly IEventSystem _eventSystem;
         private readonly AudioSource _musicSource;
         private LevelComponent _levelComponent;
         private readonly IList<IDisposable> _subscriptions = new List<IDisposable>();
 
-        public MusicSystem(IEventSystem eventSystem, IObservableGroupManager observableGroupManager)
+        public MusicSystem(IEventSystem eventSystem)
         {
             var soundEffectObject = GameObject.Find("MusicSource");
             _musicSource = soundEffectObject.GetComponent<AudioSource>();
             _eventSystem = eventSystem;
-            _observableGroupManager = observableGroupManager;
         }
 
         public void StartSystem()
@@ -40,7 +41,7 @@ namespace Game.Systems
             this.WaitForScene()
                 .Subscribe(x =>
                 {
-                    var level = _observableGroupManager.GetObservableGroup(Group).First();
+                    var level = ObservableGroup.First();
                     _levelComponent = level.GetComponent<LevelComponent>();
                     SetupSubscriptions();
                 });

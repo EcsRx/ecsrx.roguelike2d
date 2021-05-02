@@ -22,7 +22,6 @@ namespace Game.Computeds
             if(player == null)
             { return Vector3.zero; }
             
-            Debug.Log("Have Player");
             var gameObject = player.GetGameObject();
             return gameObject.transform.position;
         }

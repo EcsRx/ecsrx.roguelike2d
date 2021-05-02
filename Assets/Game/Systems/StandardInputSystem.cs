@@ -16,9 +16,7 @@ namespace Game.Systems
         public IGroup Group { get; } = new Group(typeof(MovementComponent), typeof(StandardInputComponent));
 
         public IObservable<IObservableGroup> ReactToGroup(IObservableGroup group)
-        {
-            return Observable.EveryUpdate().Select(x => group);
-        }
+        {  return Observable.EveryUpdate().Select(x => group); }
 
         public void Process(IEntity entity)
         {
