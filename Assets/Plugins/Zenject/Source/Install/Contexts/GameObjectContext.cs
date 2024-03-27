@@ -25,6 +25,11 @@ namespace Zenject
 
         DiContainer _container;
 
+        // Need to cache this when auto run is false
+        DiContainer _parentContainer;
+
+        bool _hasInstalled;
+
         public override DiContainer Container
         {
             get { return _container; }
@@ -39,15 +44,34 @@ namespace Zenject
         public void Construct(
             DiContainer parentContainer)
         {
-            Assert.IsNull(_container);
-
-            _container = parentContainer.CreateSubContainer();
+            Assert.IsNull(_parentContainer);
+            _parentContainer = parentContainer;
 
             Initialize();
         }
 
         protected override void RunInternal()
         {
+            Install(_parentContainer);
+            ResolveAndStart();
+        }
+
+        public void Install(DiContainer parentContainer) 
+        {
+            Assert.That(_parentContainer == null || _parentContainer == parentContainer);
+
+            // We allow calling this explicitly instead of relying on the [Inject] event above
+            // so that we can follow the two-pass construction-injection pattern in the providers
+            if (_hasInstalled) 
+            {
+                return;
+            }
+
+            _hasInstalled = true;
+
+            Assert.IsNull(_container);
+            _container = parentContainer.CreateSubContainer();
+
             // Do this after creating DiContainer in case it's needed by the pre install logic
             if (PreInstall != null)
             {
@@ -84,7 +108,10 @@ namespace Zenject
             {
                 PostInstall();
             }
+        }
 
+        void ResolveAndStart() 
+        {
             if (PreResolve != null)
             {
                 PreResolve();
