@@ -148,7 +148,7 @@ namespace Zenject
             lock (_typeInfo)
 #endif
             {
-                _typeInfo.Add(type, info);
+                _typeInfo[type] = info;
             }
 
             return info;

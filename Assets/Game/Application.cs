@@ -26,9 +26,9 @@ namespace Game
         protected override void LoadModules()
         {
             base.LoadModules();
-            Container.LoadModule<GameModule>();
-            Container.LoadModule<SceneCollectionsModule>();
-            Container.LoadModule<ComputedModule>();
+            DependencyRegistry.LoadModule<GameModule>();
+            DependencyRegistry.LoadModule<SceneCollectionsModule>();
+            DependencyRegistry.LoadModule<ComputedModule>();
         }
 
         protected override void LoadPlugins()

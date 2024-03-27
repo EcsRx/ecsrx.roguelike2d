@@ -8,9 +8,9 @@ namespace Game.Installers
 {
     public class ComputedModule : IDependencyModule
     {
-        public void Setup(IDependencyContainer container)
+        public void Setup(IDependencyRegistry registry)
         {
-            container.Bind<IComputedPlayerPosition>(c =>
+            registry.Bind<IComputedPlayerPosition>(c =>
             {
                 c.ToMethod(x =>
                 {

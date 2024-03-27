@@ -7,17 +7,14 @@ using ModestTree;
 using UnityEngine;
 using Zenject.Internal;
 
-#if UNITY_EDITOR
-#endif
-
 namespace Zenject
 {
     public class ProjectContext : Context
     {
-        public event Action PreInstall;
-        public event Action PostInstall;
-        public event Action PreResolve;
-        public event Action PostResolve;
+        public static event Action PreInstall;
+        public static event Action PostInstall;
+        public static event Action PreResolve;
+        public static event Action PostResolve;
 
         public const string ProjectContextResourcePath = "ProjectContext";
         public const string ProjectContextResourcePathOld = "ProjectCompositionRoot";

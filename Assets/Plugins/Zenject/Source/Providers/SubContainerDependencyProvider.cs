@@ -57,11 +57,9 @@ namespace Zenject
         {
             Assert.IsNotNull(context);
 
-            var subContainer = _subContainerCreator.CreateSubContainer(args, context);
+            var subContainer = _subContainerCreator.CreateSubContainer(args, context, out injectAction);
 
             var subContext = CreateSubContext(context, subContainer);
-
-            injectAction = null;
 
             if (_resolveAll)
             {

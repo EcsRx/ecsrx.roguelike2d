@@ -6,9 +6,9 @@ namespace Game.Installers
 {
     public class GameModule : IDependencyModule
     {
-        public void Setup(IDependencyContainer container)
+        public void Setup(IDependencyRegistry registry)
         {
-            container.Bind<GameConfiguration>(x => x.AsSingleton());
+            registry.Bind<GameConfiguration>(x => x.AsSingleton());
         }
     }
 }

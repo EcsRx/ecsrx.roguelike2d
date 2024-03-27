@@ -11,7 +11,7 @@ namespace Zenject
     public class SignalBus : ILateDisposable
     {
         readonly SignalSubscription.Pool _subscriptionPool;
-        readonly Dictionary<BindingId, SignalDeclaration> _localDeclarationMap;
+        readonly Dictionary<BindingId, SignalDeclaration> _localDeclarationMap = new Dictionary<BindingId, SignalDeclaration>();
         readonly SignalBus _parentBus;
         readonly Dictionary<SignalSubscriptionId, SignalSubscription> _subscriptionMap = new Dictionary<SignalSubscriptionId, SignalSubscription>();
         readonly ZenjectSettings.SignalSettings _settings;
@@ -35,7 +35,14 @@ namespace Zenject
             _signalDeclarationFactory = signalDeclarationFactory;
             _container = container;
 
-            _localDeclarationMap = signalDeclarations.ToDictionary(x => x.BindingId, x => x);
+           signalDeclarations.ForEach(x =>
+			{
+				if (!_localDeclarationMap.ContainsKey(x.BindingId))
+				{
+					_localDeclarationMap.Add(x.BindingId, x);
+				}
+				else _localDeclarationMap[x.BindingId].Subscriptions.AllocFreeAddRange(x.Subscriptions);
+			});
             _parentBus = parentBus;
         }
 
@@ -48,6 +55,24 @@ namespace Zenject
         {
             get { return _subscriptionMap.Count; }
         }
+
+
+        //Fires Signals with their interfaces
+        public void AbstractFire<TSignal>() where TSignal : new() => AbstractFire(new TSignal());
+		public void AbstractFire<TSignal>(TSignal signal) => AbstractFireId(null, signal);
+		public void AbstractFireId<TSignal>(object identifier, TSignal signal)
+		{
+			// Do this before creating the signal so that it throws if the signal was not declared
+			Type signalType = typeof(TSignal);
+            InternalFire(signalType, signal, identifier, true);
+
+            Type[] interfaces = signalType.GetInterfaces();
+            int numOfInterfaces = interfaces.Length;
+            for (int i = 0; i < numOfInterfaces; i++)
+            {
+                InternalFire(interfaces[i], signal, identifier, true);
+            }
+		}
 
         public void LateDispose()
         {
@@ -76,10 +101,7 @@ namespace Zenject
 
         public void FireId<TSignal>(object identifier, TSignal signal)
         {
-            // Do this before creating the signal so that it throws if the signal was not declared
-            var declaration = GetDeclaration(typeof(TSignal), identifier, true);
-
-            declaration.Fire(signal);
+            InternalFire(typeof(TSignal), signal, identifier, true);
         }
 
         public void Fire<TSignal>(TSignal signal)
@@ -89,11 +111,7 @@ namespace Zenject
 
         public void FireId<TSignal>(object identifier)
         {
-            // Do this before creating the signal so that it throws if the signal was not declared
-            var declaration = GetDeclaration(typeof(TSignal), identifier, true);
-
-            declaration.Fire(
-                (TSignal)Activator.CreateInstance(typeof(TSignal)));
+            InternalFire(typeof(TSignal), null, identifier, true);
         }
 
         public void Fire<TSignal>()
@@ -103,7 +121,7 @@ namespace Zenject
 
         public void FireId(object identifier, object signal)
         {
-            GetDeclaration(signal.GetType(), identifier, true).Fire(signal);
+            InternalFire(signal.GetType(), signal, identifier, true);
         }
 
         public void Fire(object signal)
@@ -111,13 +129,30 @@ namespace Zenject
             FireId(null, signal);
         }
 
+        public bool IsSignalDeclared<TSignal>()
+        {
+            return IsSignalDeclared(typeof(TSignal), null);
+        }
+
+        public bool IsSignalDeclared<TSignal>(object identifier)
+        {
+            return IsSignalDeclared(typeof(TSignal), identifier);
+        }
+
+        public bool IsSignalDeclared(Type signalType)  
+        {
+            return IsSignalDeclared(signalType, null);
+        }
+
+        public bool IsSignalDeclared(Type signalType, object identifier) 
+        {
+            var signalId = new BindingId(signalType, identifier);
+            return GetDeclaration(signalId) != null;
+        }
+
         public void TryFireId<TSignal>(object identifier, TSignal signal)
         {
-            var declaration = GetDeclaration(typeof(TSignal), identifier, false);
-            if (declaration != null)
-            {
-                declaration.Fire(signal);
-            }
+            InternalFire(typeof(TSignal), signal, identifier, false);
         }
 
         public void TryFire<TSignal>(TSignal signal)
@@ -127,12 +162,7 @@ namespace Zenject
 
         public void TryFireId<TSignal>(object identifier)
         {
-            var declaration = GetDeclaration(typeof(TSignal), identifier, false);
-            if (declaration != null)
-            {
-                declaration.Fire(
-                    (TSignal)Activator.CreateInstance(typeof(TSignal)));
-            }
+            InternalFire(typeof(TSignal), null, identifier, false);
         }
 
         public void TryFire<TSignal>()
@@ -142,11 +172,7 @@ namespace Zenject
 
         public void TryFireId(object identifier, object signal)
         {
-            var declaration = GetDeclaration(signal.GetType(), identifier, false);
-            if (declaration != null)
-            {
-                declaration.Fire(signal);
-            }
+            InternalFire(signal.GetType(), signal, identifier, false);
         }
 
         public void TryFire(object signal)
@@ -154,10 +180,35 @@ namespace Zenject
             TryFireId(null, signal);
         }
 
+        private void InternalFire(Type signalType, object signal, object identifier, bool requireDeclaration)
+        {
+            var signalId = new BindingId(signalType, identifier);
+
+            // Do this before creating the signal so that it throws if the signal was not declared
+            var declaration = GetDeclaration(signalId);
+
+            if (declaration == null)
+            {
+                if (requireDeclaration)
+                {
+                    throw Assert.CreateException("Fired undeclared signal '{0}'!", signalId);
+                }
+            }
+            else
+            {
+                if (signal == null)
+                {
+                    signal = Activator.CreateInstance(signalType);
+                }
+
+                declaration.Fire(signal);
+            }
+        }
+
 #if ZEN_SIGNALS_ADD_UNIRX
         public IObservable<TSignal> GetStreamId<TSignal>(object identifier)
         {
-            return GetStream(typeof(TSignal), identifier).Select(x => (TSignal)x);
+            return GetStreamId(typeof(TSignal), identifier).Select(x => (TSignal)x);
         }
 
         public IObservable<TSignal> GetStream<TSignal>()
@@ -167,7 +218,7 @@ namespace Zenject
 
         public IObservable<object> GetStreamId(Type signalType, object identifier)
         {
-            return GetDeclaration(signalType, identifier, true).Stream;
+            return GetDeclaration(new BindingId(signalType, identifier)).Stream;
         }
 
         public IObservable<object> GetStream(Type signalType)
@@ -334,7 +385,13 @@ namespace Zenject
             Assert.That(!_subscriptionMap.ContainsKey(id),
                 "Tried subscribing to the same signal with the same callback on Zenject.SignalBus");
 
-            var declaration = GetDeclaration(id.SignalId, true);
+            var declaration = GetDeclaration(id.SignalId);
+
+            if (declaration == null)
+            {
+                throw Assert.CreateException("Tried subscribing to undeclared signal '{0}'!", id.SignalId);
+            }
+
             var subscription = _subscriptionPool.Spawn(callback, declaration);
 
             _subscriptionMap.Add(id, subscription);
@@ -373,12 +430,7 @@ namespace Zenject
             _localDeclarationMap.Add(declaration.BindingId, declaration);
         }
 
-        SignalDeclaration GetDeclaration(Type signalType, object identifier, bool requireDeclaration)
-        {
-            return GetDeclaration(new BindingId(signalType, identifier), requireDeclaration);
-        }
-
-        SignalDeclaration GetDeclaration(BindingId signalId, bool requireDeclaration)
+        SignalDeclaration GetDeclaration(BindingId signalId)
         {
             SignalDeclaration handler;
 
@@ -389,12 +441,7 @@ namespace Zenject
 
             if (_parentBus != null)
             {
-                return _parentBus.GetDeclaration(signalId, requireDeclaration);
-            }
-
-            if (requireDeclaration)
-            {
-                throw Assert.CreateException("Fired undeclared signal '{0}'!", signalId);
+                return _parentBus.GetDeclaration(signalId);
             }
 
             return null;

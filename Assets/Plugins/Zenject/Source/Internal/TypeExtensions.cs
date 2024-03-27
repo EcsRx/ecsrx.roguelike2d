@@ -249,6 +249,14 @@ namespace ModestTree
 
         public static object GetDefaultValue(this Type type)
         {
+#if ENABLE_IL2CPP
+            // Workaround for IL2CPP returning default(T) for Activator.CreateInstance(typeof(T?))
+            if (type.IsGenericType() && type.GetGenericTypeDefinition() == typeof(Nullable<>))
+            {
+                return null;
+            }
+#endif
+
             if (type.IsValueType())
             {
                 return Activator.CreateInstance(type);

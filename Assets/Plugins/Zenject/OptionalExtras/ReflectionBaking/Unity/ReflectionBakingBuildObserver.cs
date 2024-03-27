@@ -21,7 +21,7 @@ namespace Zenject.ReflectionBaking
 
         static void OnAssemblyCompiled(string assemblyAssetPath, CompilerMessage[] messages)
         {
-#if !UNITY_2018
+#if !UNITY_2018_1_OR_NEWER
             if (Application.isEditor && !BuildPipeline.isBuildingPlayer)
             {
                 return;
