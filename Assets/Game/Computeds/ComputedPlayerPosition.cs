@@ -1,6 +1,6 @@
 using System;
 using System.Linq;
-using EcsRx.Plugins.Computeds;
+using EcsRx.Computeds;
 using EcsRx.Groups.Observable;
 using EcsRx.Unity.Extensions;
 using UniRx;
